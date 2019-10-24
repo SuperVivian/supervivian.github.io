@@ -7,8 +7,7 @@ html{
 body{
   width:600px;
   margin: 0 auto;
-  padding: 0 20px 20px 20px;
-  border: 5px solid black;
+  padding: 0 20px 20px 20px; 
 }
 
 h1{
@@ -38,4 +37,11 @@ img{
 button{
    display: block;
    margin: 0 auto;
+}
+
+/* 看板娘 */
+
+canvas#live2dcanvas {
+   border: 0 !important;
+   left: 0;
 }
