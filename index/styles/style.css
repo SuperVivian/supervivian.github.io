@@ -38,10 +38,22 @@ button{
    display: block;
    margin: 0 auto;
 }
-
+a{
+   text-decoration: none;
+   font-size: 25px;
+}
 /* 看板娘 */
 
 canvas#live2dcanvas {
    border: 0 !important;
    left: 0;
+}
+
+.content .link{
+   display: inline-block;
+   padding-top: 20px;
+   color: rgb(42, 134, 187);
+}
+.content a:hover{
+   color: #000;
 }
