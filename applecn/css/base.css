@@ -1,0 +1,84 @@
+body,p,ul {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul li {
+    list-style: none;
+}
+.clearfix::after{
+    content:' ';
+    display: block;
+    height: 0;
+    line-height: 0;
+    clear: both;
+    zoom: 1;
+}
+.wrap {
+    width: 1000px;
+    margin: 0 auto;
+}
+
+.ad {
+    background-color: #444444;
+    height: 40px;
+    line-height: 40px;
+}
+
+.nav {
+    background-color: #0e1010;
+    height: 44px;
+    line-height: 44px;
+}
+
+.nav .list {
+    display: flex;
+}
+
+.nav .link {
+    color: #c8c8c8;
+    display: inline-block;
+    width: 100px;
+    font-size: 14px;
+    font-family: "SF Pro SC", "HanHei SC", "SF Pro Text", "Myriad Set Pro", "SF Pro Icons", "PingFang SC", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+/*main模块*/
+.main .headline{
+    display: inline;
+}
+.main .ad-1 .img{    
+    width: 2560px;
+    height: 600px;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    left: calc(-35%);
+}
+.main .ad-2{
+    margin: 0;
+    padding: 0;
+    top:15px;
+    background-color: #000;
+    height: 500px;
+}
+.main .ad-2 .img{   
+    width: 1000px;
+    margin: auto;
+    height: 100%; 
+}
+.main .ad-3{
+    margin: 0;
+    padding: 0;
+    top:15px;
+    background-color: #fafafa;
+    height: 500px;
+}
+.main .ad-3 .img{    
+    margin: 0;
+    padding: 0;
+    top:10px;
+}
