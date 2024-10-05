@@ -1,0 +1,264 @@
+:root {
+    --transition-duration: .2s;
+    --transition-timing-function: linear;
+    --transition-delay: 0s;
+
+    --font-size-default: 18px;
+    --font-size-lg: 25px;
+
+    --text-color-default: #2c2c2c;
+    --text-color-light: #fff;
+
+    --bg-color-default: #fff;
+    --bg-color-dark: #2c2c2c;
+
+    --border-color-default: #2c2c2c;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* DEMO STYLES: YOU DON'T NEED THEM!!! */
+
+/* 为整个页面的<body>元素设置样式 */  
+body {  
+    /* 设置字体族。首先尝试使用'Quicksand'字体，如果不可用，则回退到任何可用的无衬线字体（sans-serif） */  
+    font-family: 'Quicksand', sans-serif;  
+      
+    /* 设置字体大小。这里使用了一个CSS变量（--font-size-default），该变量的值需要在其他地方定义 */  
+    font-size: var(--font-size-default);  
+      
+    /* 设置文本颜色。同样，这里使用了一个CSS变量（--text-color-default），其值也需要在CSS中其他地方定义 */  
+    color: var(--text-color-default);  
+}
+
+/* 定义.header类的样式 */  
+.header {  
+    /* 设置元素的最大宽度为500像素，确保它在小屏幕上不会过大 */  
+    max-width: 500px;  
+      
+    /* 设置元素的外边距。上外边距为50像素，左右外边距自动以实现水平居中，下外边距为0 */  
+    margin: 50px auto 0;  
+      
+    /* 设置元素内文本的对齐方式为居中。这会影响所有内联内容或块级元素内的内联内容 */  
+    text-align: center;  
+}
+
+.header__title {
+    /* 设置标题元素的下外边距为10像素，为标题和后续内容之间提供空间 */  
+    margin-bottom: 10px;  
+    
+    /* 设置字体粗细为600，使标题看起来更粗、更醒目。注意，这通常比'bold'（700）稍细一些 */  
+    font-weight: 600;  
+}
+
+.content {
+    margin: 50px auto;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 50px;
+    width: 95%;
+    max-width: 1000px;
+    margin: auto;
+    justify-content: center;
+}
+
+/* ICON STYLES: YOU DON'T NEED THEM!!! */
+
+.icon {
+    /* KEEP IT SQUARE */
+    --icon-dimensions: 150px;
+
+    width: var(--icon-dimensions);
+    height: var(--icon-dimensions);
+}
+
+.icon--bordered {
+    border: 2px solid orange;
+}
+
+/* PUMPKIN ICON */
+
+.pumpkin {
+    --body-color--main: #e57e25;
+    --body-color--light: #F29C1F;
+    --tail-color: #24AE5F;
+    --tail-height: 30%;
+    --bleak-color: #FAC176;
+    --eyes-color: #802f34;
+    --brows-color: #d25627;
+    --nose-color: #802f34;
+    --mouth-color: #802f34;
+    --teeth-color: var(--body-color--light);
+
+    position: relative;
+}
+ 
+.pumpkin__tail {
+    position: absolute;
+    top: 8%;
+    left: 50%;
+    width: 15%;
+    height: var(--tail-height);
+    transform: translateX(-50%) rotate(-33deg);
+    background-color: var(--tail-color);
+    border-radius: 100% 0% 100% 60% / 100% 0% 100% 0%;
+}
+
+.pumpkin__main {
+    position: relative;
+    top: 22%;
+    height: 78%;
+}
+
+.pumpkin__bleak {
+    position: absolute;
+    left: 33%;
+    top: 13%;
+    height: 20%;
+    width: 20%;
+    transform: rotate(-56deg);
+    border: 6px solid transparent;
+    border-top-color: var(--bleak-color);
+    border-radius: 100px;
+    z-index: 3;
+}
+
+.pumpkin__face {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    width: 62%;
+    height: 56%;
+    transform: translateX(-50%);
+    z-index: 4;
+}
+
+.pumpkin__eyes-nose {
+    height: 40%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.pumpkin__eye {
+    position: relative;
+    width: 24%;
+    height: 100%;
+}
+
+.pumpkin__eye:before {
+    position: absolute;
+    display: block;
+    top: 0;
+    width: 110%;
+    height: 30%;
+    content: '';
+    background-color: var(--brows-color);
+    z-index: 5;
+    border-radius: 50px;
+}
+
+.pumpkin__eye:after {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    display: block;
+    width: 80%;
+    height: 100%;
+    transform: translateX(-50%);
+    content: '';
+    background-color: var(--eyes-color);
+    border-radius: 50%;
+}
+
+.pumpkin__eye--left:before {
+    transform: rotate(28deg) translate(8%, -32%);
+}
+.pumpkin__eye--right:before {
+    transform: rotate(-28deg) translate(-8%, -32%);
+}
+
+.pumpkin__nose {
+    width: 12%;
+    height: 44%;
+    border-radius: 100% 100% 100% 100% / 100% 0% 100% 100%;
+    background-color: var(--nose-color);
+    transform: rotate(-46deg);
+}
+
+.pumpkin__mouth {
+    --teeth-offset: 15%;
+
+    position: relative;
+    top: 15%;
+    height: 45%;
+    width: 50%;
+    margin: auto;
+    background-color: var(--mouth-color);
+    border-radius: 96% 0% 51% 49% / 0% 0% 100% 100%
+}
+
+.pumpkin__mouth:before,
+.pumpkin__mouth:after {
+    position: absolute;
+    top: 0;
+    width: 15%;
+    height: 20%;
+    display: block;
+    content: '';
+    background-color: var(--teeth-color);
+    border-radius: 0 0 50px 50px;
+}
+
+.pumpkin__mouth:before {
+    left: var(--teeth-offset);
+}
+
+.pumpkin__mouth:after {
+    right: var(--teeth-offset);
+}
+
+.pumpkin__body {
+    position: relative;
+    height: 100%;
+}
+
+.pumpkin__body:before,
+.pumpkin__body:after {
+    position: absolute;
+    top: 0;
+    display: block;
+    width: 55%;
+    height: 100%;
+    content: '';
+    background-color: var(--body-color--main);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.pumpkin__body:before {
+    left: 0;
+}
+
+.pumpkin__body:after {
+    right: 0;
+}
+
+.pumpkin__body-inner {
+    position: absolute;
+    left: 50%;
+    width: 49%;
+    height: 100%;
+    transform: translateX(-50%);
+    background-color: var(--body-color--light);
+    border-radius: 50%;
+    z-index: 2;
+}
+
