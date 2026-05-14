@@ -1,214 +1,152 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import WorkCard from '../components/WorkCard.astro';
-
-const works = [
-  {
-    title: 'Christmas Night',
-    description: '圣诞夜主题互动网页',
-    href: '/works/christmas-night/index.html',
-    preview: '/works/christmas-night/preview.png',
-    color: 'yellow' as const,
-  },
-  {
-    title: 'Persona Map',
-    description: '人格大陆 · 幻想风格个人介绍',
-    href: '/works/persona-map/index.html',
-    preview: '/works/persona-map/preview.png',
-    color: 'cyan' as const,
-  },
-];
+import MinimalHome from '../themes/minimal/Home.astro';
+import AnimeHome from '../themes/anime/Home.astro';
 ---
 
 <BaseLayout title="supervivian | Portfolio">
-  <Header />
+  <!-- 两个主题同时渲染，JS 控制显隐 -->
+  <div id="theme-minimal" class="theme-container theme-minimal" data-theme="minimal">
+    <MinimalHome />
+  </div>
+  <div id="theme-anime" class="theme-container theme-anime" data-theme="anime" style="display:none">
+    <AnimeHome />
+  </div>
 
-  <main>
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="container hero-content">
-        <div class="hero-text">
-          <h1 class="hero-title">Hi, I'm<br/>supervivian</h1>
-          <p class="hero-subtitle">Creative Programmer & Designer</p>
-        </div>
-        <div class="hero-image">
-          <img src="/hero.svg" alt="Hero Illustration" />
-        </div>
-      </div>
-
-      <!-- Decorative Elements -->
-      <div class="deco deco-1"></div>
-      <div class="deco deco-2"></div>
-      <div class="deco deco-3"></div>
-    </section>
-
-    <!-- Works Section -->
-    <section class="works">
-      <div class="container">
-        <h2 class="section-title">
-          <span class="title-text">Works</span>
-          <span class="title-line"></span>
-        </h2>
-
-        <div class="works-grid">
-          {works.map((work) => (
-            <WorkCard {...work} />
-          ))}
-        </div>
-
-        <p class="works-hint">更多作品持续更新中...</p>
-      </div>
-    </section>
-  </main>
-
-  <Footer />
+  <!-- 主题切换按钮 -->
+  <div class="theme-switcher" id="themeSwitcher">
+    <button class="switcher-btn" id="switcherBtn" aria-label="切换主题">
+      <span class="switcher-icon" id="switcherIcon">🎨</span>
+      <span class="switcher-label" id="switcherLabel">切换主题</span>
+    </button>
+  </div>
 </BaseLayout>
 
+<script>
+  (function () {
+    const THEME_KEY = 'supervivian-theme';
+    const containers = {
+      minimal: document.getElementById('theme-minimal'),
+      anime: document.getElementById('theme-anime'),
+    };
+    const btn = document.getElementById('switcherBtn');
+    const icon = document.getElementById('switcherIcon');
+    const label = document.getElementById('switcherLabel');
+
+    function activateTheme(name) {
+      // 切换内容显隐
+      Object.entries(containers).forEach(([key, el]) => {
+        if (!el) return;
+        el.style.display = key === name ? '' : 'none';
+      });
+      // 在 html 上标记当前主题
+      document.documentElement.setAttribute('data-theme', name);
+      // 更新按钮文案
+      if (label && icon) {
+        if (name === 'anime') {
+          label.textContent = '简约风格';
+          icon.textContent = '◐';
+        } else {
+          label.textContent = '二次元风';
+          icon.textContent = '🌸';
+        }
+      }
+      localStorage.setItem(THEME_KEY, name);
+    }
+
+    // 页面加载时恢复主题
+    const saved = localStorage.getItem(THEME_KEY) || 'anime';
+    activateTheme(saved);
+
+    // 点击切换
+    if (btn) {
+      btn.addEventListener('click', function () {
+        const current = document.documentElement.getAttribute('data-theme') || 'anime';
+        const next = current === 'anime' ? 'minimal' : 'anime';
+        activateTheme(next);
+      });
+    }
+  })();
+</script>
+
 <style>
-  /* Hero Section */
-  .hero {
-    padding: 80px 0;
-    position: relative;
-    overflow: hidden;
+  /* 主题容器 */
+  .theme-container {
+    min-height: 100vh;
   }
 
-  .hero-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: center;
+  /* 动漫主题时覆盖 body 样式 */
+  :global(html[data-theme="anime"]) body {
+    background: linear-gradient(135deg, #0f0a1e 0%, #1a1040 30%, #2d1b69 60%, #6b2fa0 100%) !important;
+    color: #f0e6ff !important;
+    font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif !important;
   }
 
-  .hero-title {
-    font-size: 64px;
-    line-height: 1.1;
-    margin-bottom: 16px;
-    letter-spacing: 4px;
+  /* 简约主题恢复默认 */
+  :global(html[data-theme="minimal"]) body {
+    background: var(--bg-color) !important;
+    color: var(--text-primary) !important;
+    font-family: 'Georgia', 'Times New Roman', serif !important;
   }
 
-  .hero-subtitle {
-    font-size: 20px;
-    color: var(--text-secondary);
+  /* 切换按钮 */
+  .theme-switcher {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
   }
 
-  .hero-image {
-    display: flex;
-    justify-content: center;
-  }
-
-  .hero-image img {
-    max-width: 100%;
-    height: auto;
-  }
-
-  /* Decorative Elements */
-  .deco {
-    position: absolute;
-    border: 2px solid var(--border-color);
-  }
-
-  .deco-1 {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    top: 20%;
-    right: 10%;
-  }
-
-  .deco-2 {
-    width: 40px;
-    height: 40px;
-    top: 60%;
-    right: 15%;
-    transform: rotate(45deg);
-  }
-
-  .deco-3 {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--accent-pink);
-    top: 30%;
-    right: 25%;
-  }
-
-  /* Works Section */
-  .works {
-    padding: 60px 0;
-  }
-
-  .section-title {
+  .switcher-btn {
     display: flex;
     align-items: center;
-    gap: 24px;
-    margin-bottom: 48px;
-  }
-
-  .title-text {
-    font-size: 32px;
-    letter-spacing: 4px;
-  }
-
-  .title-line {
-    flex: 1;
-    height: 2px;
-    background: var(--border-color);
-  }
-
-  .works-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 32px;
-  }
-
-  .works-hint {
-    text-align: center;
-    margin-top: 48px;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
     font-size: 14px;
-    color: var(--text-secondary);
-    font-style: italic;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
+    
+    /* 动画主题下的按钮样式 */
+    background: rgba(255, 255, 255, 0.12);
+    color: #f0e6ff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
   }
 
-  /* Responsive */
-  @media (max-width: 900px) {
-    .hero-content {
-      grid-template-columns: 1fr;
-      text-align: center;
-    }
+  :global(html[data-theme="minimal"]) .switcher-btn {
+    background: rgba(45, 52, 54, 0.9);
+    color: #faf8f5;
+    border: 1px solid var(--border-color);
+  }
 
-    .hero-title {
-      font-size: 48px;
-    }
+  .switcher-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  }
 
-    .hero-image {
-      order: -1;
-    }
+  .switcher-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
 
-    .hero-image img {
-      max-width: 300px;
-    }
+  .switcher-label {
+    font-size: 13px;
+    letter-spacing: 1px;
   }
 
   @media (max-width: 480px) {
-    .hero {
-      padding: 40px 0;
+    .theme-switcher {
+      bottom: 16px;
+      right: 16px;
     }
-
-    .hero-title {
-      font-size: 36px;
+    .switcher-btn {
+      padding: 8px 16px;
     }
-
-    .hero-subtitle {
-      font-size: 16px;
-    }
-
-    .works-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .deco {
+    .switcher-label {
       display: none;
     }
   }
