@@ -26,6 +26,9 @@ jobs:
           npm ci
           npx astro build
 
+      - name: Add .nojekyll
+        run: touch dist/.nojekyll
+
       - name: Deploy to master branch
         uses: peaceiris/actions-gh-pages@v4
         with:
