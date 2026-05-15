@@ -1,29 +1,39 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import WorkCard from '../../components/WorkCard.astro';
 
-const works = [
+// 石板的 color: 有作品的用主题色, 占位用 'stone'
+type StoneColor = 'yellow' | 'cyan' | 'pink' | 'purple' | 'stone';
+
+interface WorkStone {
+  title: string;
+  description: string;
+  href: string;
+  color: StoneColor;
+}
+
+const works: WorkStone[] = [
   {
     title: 'Christmas Night',
-    description: '圣诞夜主题互动网页',
+    description: '圣诞夜的互动小屋',
     href: '/works/christmas-night/index.html',
-    preview: '/works/christmas-night/preview-anime.png',
-    color: 'yellow' as const,
+    color: 'yellow',
   },
   {
     title: 'Persona Map',
-    description: '人格大陆 · 幻想风格个人介绍',
+    description: '人格幻想风格地图',
     href: '/works/persona-map/index.html',
-    preview: '/works/persona-map/preview-anime.png',
-    color: 'cyan' as const,
+    color: 'cyan',
   },
   {
     title: 'What I Love',
-    description: '喜欢的事物把我包围 · 互动泡泡',
+    description: '100件喜欢包围着我',
     href: '/works/what-i-love/index.html',
-    preview: '/works/what-i-love/preview-anime.png',
-    color: 'pink' as const,
+    color: 'pink',
   },
+  // 占位石板（灰色）
+  { title: '???', description: '下一个作品？', href: '#', color: 'stone' },
+  { title: '???', description: '下一个作品？', href: '#', color: 'stone' },
+  { title: '???', description: '下一个作品？', href: '#', color: 'stone' },
 ];
 ---
 
@@ -94,13 +104,22 @@ const works = [
           <p class="works-desc">之前的创作们～</p>
         </div>
 
-        <div class="works-grid">
-          {works.map((work) => (
-            <WorkCard {...work} />
-          ))}
+        <!-- 石板菜单（纯文字） -->
+        <div class="stone-path">
+          <div class="stones-list">
+            {works.map((work) => (
+              <a
+                href={work.href}
+                class={`stone ${work.color === 'stone' ? 'stone--empty' : ''}`}
+                style={work.color !== 'stone' ? `--stone-color: var(--color-${work.color})` : ''}
+                target={work.color !== 'stone' ? '_blank' : '_self'}
+              >
+                <span class="stone-title">{work.title}</span>
+                <span class="stone-desc">{work.description}</span>
+              </a>
+            ))}
+          </div>
         </div>
-
-        <p class="works-hint">— 未完待续 —</p>
       </div>
     </section>
   </main>
@@ -402,15 +421,29 @@ const works = [
   }
 
   /* ==============================
-     Works
+     石板颜色变量
+     ============================== */
+  :root {
+    --color-yellow: #fbbf24;
+    --color-cyan: #22d3ee;
+    --color-pink: #f472b6;
+    --color-purple: #a78bfa;
+    --color-stone: #4a4a5a;
+    --stone-hover: #ff8fab;
+  }
+
+  /* ==============================
+     Works · 樱花公园石板路
      ============================== */
   .works {
     padding: 80px 0;
+    position: relative;
+    z-index: 1;
   }
 
   .works-header {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 40px;
   }
 
   .works-label-jp {
@@ -433,19 +466,148 @@ const works = [
     letter-spacing: 3px;
   }
 
-  .works-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 32px;
+  /* ===== 石板菜单容器 ===== */
+  .stone-path {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
   }
 
-  .works-hint {
-    text-align: center;
-    margin-top: 48px;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.3);
-    letter-spacing: 4px;
+  /* ===== 石板列表 ===== */
+  .stones-list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    padding: 10px 0;
   }
+
+  /* 每块石板 */
+  .stone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    max-width: 360px;
+    padding: 18px 24px 14px;
+    text-decoration: none;
+    position: relative;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.3s ease;
+
+    /* 石板外观 */
+    background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+    border: 1.5px solid rgba(255,255,255,0.06);
+
+    /* 规则圆角 */
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+
+    /* 错落排列 */
+    margin-left: calc(var(--offset, 0) * 1px);
+  }
+
+  /* 石板错落 */
+  .stone:nth-child(odd) { --offset: -12; }
+  .stone:nth-child(even) { --offset: 12; }
+  .stone:nth-child(3n) { --offset: 20; }
+
+  /* ===== 已发布 · 彩色石板 ===== */
+  .stone {
+    border-color: var(--stone-color, rgba(255,255,255,0.1));
+    cursor: pointer;
+  }
+
+  .stone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 50%,
+      color-mix(in srgb, var(--stone-color, transparent) 8%, transparent),
+      transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .stone:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--stone-color, #ff8fab) 20%, transparent);
+    border-color: var(--stone-color, #ff8fab);
+  }
+
+  .stone:hover::before {
+    opacity: 1;
+  }
+
+  .stone-title {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    color: #f0e6ff;
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stone:hover .stone-title {
+    color: var(--stone-color, #ff8fab);
+  }
+
+  .stone-desc {
+    font-size: 12px;
+    color: rgba(240, 230, 255, 0.4);
+    margin-top: 4px;
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease;
+  }
+
+  .stone:hover .stone-desc {
+    color: rgba(240, 230, 255, 0.6);
+  }
+
+  /* ===== 占位石板（灰色） ===== */
+  .stone--empty {
+    pointer-events: none;
+    opacity: 0.35;
+    border-color: rgba(74, 74, 90, 0.7);
+    background: linear-gradient(145deg, rgba(74, 74, 90, 0.2), rgba(74, 74, 90, 0.08));
+  }
+
+  .stone--empty .stone-title {
+    color: rgba(150, 150, 170, 0.5);
+  }
+
+  .stone--empty .stone-desc {
+    color: rgba(150, 150, 170, 0.3);
+  }
+
+  .stone--empty:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: rgba(74, 74, 90, 0.7);
+  }
+
+  /* ===== 石板两侧小装饰（道端花草） ===== */
+  .stone::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.08), transparent);
+    border-radius: 50%;
+    display: none;
+  }
+
+  .stone:nth-child(1)::after { display: block; left: -14px; }
+  .stone:nth-child(3)::after { display: block; right: -14px; }
+  .stone:nth-child(5)::after { display: block; left: -16px; }
 
   /* ==============================
      Footer
@@ -553,9 +715,17 @@ const works = [
       width: 150px;
     }
 
-    .works-grid {
-      grid-template-columns: 1fr;
+    .stone-path {
+      max-width: 380px;
+      padding: 16px;
     }
+
+    .stone {
+      width: 85%;
+      padding: 14px 20px 12px;
+    }
+
+    .stone-title { font-size: 18px; }
 
     .logo-jp {
       font-size: 10px;
