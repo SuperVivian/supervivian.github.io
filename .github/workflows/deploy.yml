@@ -1,7 +1,9 @@
 name: Deploy to GitHub Pages
 
 on:
-  workflow_dispatch:  # 只有手动点击才触发
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write

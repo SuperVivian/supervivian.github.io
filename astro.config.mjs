@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://your-site.com',
+  site: 'https://supervivian.github.io',
 });
