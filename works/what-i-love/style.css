@@ -1,0 +1,261 @@
+/* ==============================
+   what i love · 100个圆形气泡 · 挤压包围
+   ============================== */
+
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+
+:root {
+  --bg: #f5ede4;
+  --text: #3a2a3a;
+  --text-light: #8a7a8a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'ZCOOL KuaiLe', 'PingFang SC', 'Microsoft YaHei', cursive;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* 牛皮纸纹理 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(200,180,160,0.08) 2px, rgba(200,180,160,0.08) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(180,160,140,0.05) 3px, rgba(180,160,140,0.05) 6px);
+  pointer-events: none; z-index: 0;
+}
+
+/* Header */
+.header {
+  position: relative; z-index: 2;
+  text-align: center; padding: 20px 20px 6px;
+}
+
+.title {
+  font-size: clamp(18px, 3.5vw, 30px);
+  color: #5a3a5a;
+  letter-spacing: 2px;
+  display: inline-block;
+  font-weight: 400;
+  position: relative;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  left: -4px; bottom: -2px;
+  width: calc(100% + 8px); height: 3px;
+  background: repeating-linear-gradient(90deg,
+    #ff8fab 0px, #ff8fab 8px, transparent 8px, transparent 10px,
+    #7c4dff 10px, #7c4dff 18px, transparent 18px, transparent 20px);
+  border-radius: 2px; opacity: 0.6;
+}
+
+.subtitle {
+  font-size: 11px; color: var(--text-light);
+  margin-top: 6px; letter-spacing: 2px;
+}
+
+/* 场景 */
+.scene {
+  position: relative; width: 100%; max-width: 900px;
+  min-height: calc(100vh - 100px);
+  flex: 1; display: flex;
+  align-items: center; justify-content: center; z-index: 1;
+  overflow: hidden;
+}
+
+/* 角色居中容器 */
+.character-wrap {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+/* ==============================
+   中心人物
+   ============================== */
+.center-character {
+  position: relative; width: 130px; height: 170px;
+  z-index: 10;
+  animation: levitate 5s ease-in-out infinite;
+}
+
+@keyframes levitate {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.char-glow {
+  position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,143,171,0.15), rgba(124,77,255,0.1), transparent 70%);
+  animation: glow-pulse 4s ease-in-out infinite; z-index: -1;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.08); }
+}
+
+.char-avatar {
+  display: flex; flex-direction: column; align-items: center;
+}
+
+.char-hair {
+  width: 82px; height: 44px;
+  background: linear-gradient(180deg, #8b5cf6, #6d28d9);
+  border-radius: 41px 41px 10px 10px; position: relative; z-index: 2;
+}
+
+.char-hair::before, .char-hair::after {
+  content: ''; position: absolute; top: 22px;
+  width: 18px; height: 36px; background: #7c3aed;
+  border-radius: 7px 9px 12px 7px; z-index: -1;
+}
+.char-hair::before { left: -9px; transform: rotate(-18deg); }
+.char-hair::after { right: -9px; transform: rotate(18deg); }
+
+.bangs {
+  position: absolute; top: -2px; left: 50%; transform: translateX(-50%);
+  width: 56px; height: 24px; background: #7c3aed;
+  clip-path: polygon(0% 100%, 15% 40%, 30% 100%, 50% 30%, 70% 100%, 85% 45%, 100% 100%);
+  z-index: 3;
+}
+
+.char-face {
+  width: 68px; height: 58px;
+  background: linear-gradient(180deg, #fff5f7, #ffe4ec);
+  border-radius: 4px 4px 34px 34px;
+  position: relative; margin-top: -4px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+
+.eye {
+  width: 7px; height: 9px; background: #3a2a3a;
+  border-radius: 50%; animation: blink 3.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 88%, 100% { transform: scaleY(1); }
+  93% { transform: scaleY(0.1); }
+}
+
+.mouth {
+  position: absolute; bottom: 10px;
+  width: 10px; height: 5px;
+  border-bottom: 2.5px solid #ef9a9a; border-radius: 0 0 10px 10px;
+}
+
+.blush {
+  position: absolute; bottom: 16px;
+  width: 12px; height: 8px;
+  background: rgba(255, 138, 171, 0.3); border-radius: 50%; filter: blur(2px);
+}
+.left-blush { left: 4px; }
+.right-blush { right: 4px; }
+
+.char-body {
+  width: 46px; height: 46px;
+  background: linear-gradient(135deg, #fda4af, #fb7185);
+  border-radius: 6px 6px 14px 14px; position: relative; margin-top: 3px;
+}
+
+.char-body::before, .char-body::after {
+  content: ''; position: absolute; top: 4px;
+  width: 10px; height: 22px; background: #fff5f7; border-radius: 5px;
+}
+.char-body::before { left: -8px; transform: rotate(-20deg); }
+.char-body::after { right: -8px; transform: rotate(20deg); }
+
+.char-label {
+  text-align: center; margin-top: 4px;
+  font-size: 11px; color: #7c3aed; letter-spacing: 3px;
+}
+
+/* ==============================
+   泡泡容器
+   ============================== */
+.bubbles-container {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+
+/* ==============================
+   圆形泡泡
+   ============================== */
+.bubble {
+  position: absolute;
+  pointer-events: auto;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: 'ZCOOL KuaiLe', cursive;
+  line-height: 1.15;
+  letter-spacing: 0.5px;
+  color: var(--c, #ff8fab);
+  z-index: 5;
+
+  border-radius: 50%;
+  text-align: center;
+  padding: 0;
+  /* 居中定位：left/top 指向圆心 */
+  transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border 0.2s ease,
+              background 0.2s ease;
+}
+
+/* 长文字缩小字号 */
+.bubble:nth-child(n) {
+  font-size: 11px;
+}
+
+.bubble:hover {
+  transform: translate(-50%, -50%) scale(1.25) rotate(var(--rot, 0deg)) !important;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 3px solid var(--c, #ff8fab) !important;
+}
+
+/* ==============================
+   Footer
+   ============================== */
+.footer {
+  position: relative; z-index: 2;
+  text-align: center; padding: 10px 20px 16px;
+  font-size: 11px; color: var(--text-light); letter-spacing: 2px;
+}
+
+/* ==============================
+   响应式
+   ============================== */
+@media (max-width: 640px) {
+  .scene { min-height: calc(100vh - 80px); }
+
+  .bubble { font-size: 10px; }
+
+  .center-character {
+    width: 100px; height: 130px;
+  }
+  .char-hair { width: 62px; height: 34px; }
+  .char-hair::before, .char-hair::after { width: 12px; height: 26px; }
+  .bangs { width: 42px; height: 18px; }
+  .char-face { width: 50px; height: 44px; gap: 8px; }
+  .eye { width: 5px; height: 7px; }
+  .mouth { width: 8px; height: 4px; }
+  .char-body { width: 34px; height: 34px; }
+  .char-body::before, .char-body::after { width: 8px; height: 16px; }
+}
