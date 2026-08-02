@@ -435,10 +435,19 @@
   :root {
     --phone-width: 460px;
     --phone-height: 920px;
-    --font-size-app-name: 11px;
-    --font-size-status-clock: 15px;
-    --font-size-dock-label: 10px;
-    --font-size-section-title: 16px;
+    --font-size-status: 13px;
+    --font-size-status-battery: 11px;
+    --font-size-status-clock: 17px;
+    --font-size-profile-name: 20px;
+    --font-size-profile-desc: 12px;
+    --font-size-app-name: 14px;
+    --font-size-dock-name: 11px;
+    --font-size-dock-label: 11px;
+    --font-size-section-title: 18px;
+    --font-size-modal-close: 22px;
+    --font-size-modal-title: 20px;
+    --font-size-modal-desc: 14px;
+    --font-size-modal-link: 14px;
   }
 
   .mobile-home {
@@ -446,31 +455,31 @@
   }
 
   .app-icon {
-    width: 68px;
-    height: 68px;
+    width: 72px;
+    height: 72px;
   }
 
   .app-icon img {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
   }
 
   .app-grid {
-    gap: 18px 14px;
+    gap: 20px 16px;
   }
 
   .dock-item {
-    width: 58px;
-    height: 58px;
+    width: 62px;
+    height: 62px;
   }
 
   .dock-item img {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
   }
 
   .header-title {
-    font-size: 32px;
+    font-size: 36px;
   }
 
   .phone-status {
@@ -480,16 +489,30 @@
   .page-header {
     padding: 18px 24px;
   }
+
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+  }
 }
 
 @media (min-width: 1200px) {
   :root {
-    --phone-width: 520px;
-    --phone-height: 1040px;
-    --font-size-app-name: 12px;
-    --font-size-status-clock: 17px;
-    --font-size-dock-label: 11px;
-    --font-size-section-title: 18px;
+    --phone-width: 540px;
+    --phone-height: 1080px;
+    --font-size-status: 15px;
+    --font-size-status-battery: 13px;
+    --font-size-status-clock: 19px;
+    --font-size-profile-name: 24px;
+    --font-size-profile-desc: 14px;
+    --font-size-app-name: 16px;
+    --font-size-dock-name: 12px;
+    --font-size-dock-label: 12px;
+    --font-size-section-title: 20px;
+    --font-size-modal-close: 26px;
+    --font-size-modal-title: 24px;
+    --font-size-modal-desc: 16px;
+    --font-size-modal-link: 16px;
   }
 
   .mobile-home {
@@ -497,34 +520,39 @@
   }
 
   .app-icon {
-    width: 78px;
-    height: 78px;
+    width: 84px;
+    height: 84px;
   }
 
   .app-icon img {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
   }
 
   .app-grid {
-    gap: 22px 18px;
+    gap: 24px 20px;
   }
 
   .dock-item {
-    width: 66px;
-    height: 66px;
+    width: 72px;
+    height: 72px;
   }
 
   .dock-item img {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
   }
 
   .header-title {
-    font-size: 38px;
+    font-size: 44px;
   }
 
   .page-header {
     padding: 22px 28px;
+  }
+
+  .profile-avatar {
+    width: 74px;
+    height: 74px;
   }
 }
