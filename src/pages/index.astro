@@ -175,16 +175,15 @@ import { dockItems } from '../data/dock';
     dockItems.forEach((item) => {
       item.addEventListener('click', (e) => {
         const el = item as HTMLElement;
-        if (el.classList.contains('dock-item--modal')) {
-          e.preventDefault();
-        }
+        if (!el.classList.contains('dock-item--modal')) return;
+        e.preventDefault();
         openModal({
           title: el.dataset.title || '',
           desc: el.dataset.desc || '',
           href: el.dataset.href || '#',
           color: el.dataset.color || '#666',
           icon: el.dataset.icon || '',
-          isEmpty: el.classList.contains('dock-item--modal'),
+          isEmpty: true,
         });
       });
     });
