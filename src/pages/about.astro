@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { aboutInfo } from '../data/about';
+---
+
+<BaseLayout title={aboutInfo.title} description={aboutInfo.description}>
+  <main class="about-page">
+    <div class="about-container">
+      <nav class="about-nav" aria-label="页面导航">
+        <span class="about-nav__brand">supervivian</span>
+        <a class="about-nav__back" href="/" aria-label="返回首页">
+          ← 返回首页
+        </a>
+      </nav>
+
+      <section class="about-hero" aria-label="个人介绍">
+        <div class="about-text">
+          <h1 class="about-headline">{aboutInfo.headline}</h1>
+          <h2 class="about-name">{aboutInfo.name}</h2>
+          <span class="about-role">{aboutInfo.role}</span>
+          <p class="about-bio">{aboutInfo.bio}</p>
+
+          <div class="about-cards">
+            {aboutInfo.cards.map((card) => (
+              <article class="about-card">
+                <h3 class="about-card__title">{card.title}</h3>
+                <ul class="about-card__list">
+                  {card.items.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div class="about-visual">
+          <div class="about-visual__frame">
+            <img
+              class="about-visual__avatar"
+              src={aboutInfo.avatar}
+              alt={`${aboutInfo.name} 的卡通形象`}
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      <footer class="about-footer" aria-label="相关链接">
+        {aboutInfo.links.map((link) => (
+          <a
+            class="about-link"
+            href={link.href}
+            target={link.href.startsWith('http') ? '_blank' : undefined}
+            rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+          >
+            {link.label} →
+          </a>
+        ))}
+      </footer>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  @import '../styles/about.css';
+</style>

@@ -1,153 +1,198 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import MinimalHome from '../themes/minimal/Home.astro';
-import AnimeHome from '../themes/anime/Home.astro';
+import { works } from '../data/works';
+import { dockItems } from '../data/dock';
 ---
 
-<BaseLayout title="supervivian | Portfolio">
-  <!-- 两个主题同时渲染，JS 控制显隐 -->
-  <div id="theme-minimal" class="theme-container theme-minimal" data-theme="minimal">
-    <MinimalHome />
-  </div>
-  <div id="theme-anime" class="theme-container theme-anime" data-theme="anime" style="display:none">
-    <AnimeHome />
-  </div>
+<BaseLayout title="supervivian">
+  <main class="mobile-home">
+    <div class="phone-frame">
+      <!-- 状态栏 -->
+      <header class="status-bar" aria-label="状态栏">
+        <span class="status-time" id="statusTime">12:00</span>
+        <div class="status-icons">
+          <span class="signal" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          <span class="battery" aria-label="电池电量">100%</span>
+        </div>
+      </header>
 
-  <!-- 主题切换按钮 -->
-  <div class="theme-switcher" id="themeSwitcher">
-    <button class="switcher-btn" id="switcherBtn" aria-label="切换主题">
-      <span class="switcher-icon" id="switcherIcon">🎨</span>
-      <span class="switcher-label" id="switcherLabel">切换主题</span>
-    </button>
+      <!-- 主屏 -->
+      <div class="home-screen">
+        <div class="wallpaper" aria-hidden="true"></div>
+
+        <section class="profile-card" aria-label="个人简介">
+          <div class="avatar">
+            <img src="/assets/icons/avatar.svg?v=2" alt="" loading="lazy" />
+          </div>
+          <h1 class="profile-name">supervivian</h1>
+          <p class="profile-desc">Creative Programmer</p>
+        </section>
+
+        <section class="app-grid" aria-label="作品应用">
+          {works.map((work) => {
+            const isExternal = work.href.startsWith('http');
+            const Tag = work.isEmpty ? 'button' : 'a';
+            return (
+              <Tag
+                class={`app-item ${work.isEmpty ? 'app-item--empty' : ''}`}
+                type={work.isEmpty ? 'button' : undefined}
+                href={work.isEmpty ? undefined : work.href}
+                target={work.isEmpty || !isExternal ? undefined : '_blank'}
+                rel={work.isEmpty || !isExternal ? undefined : 'noopener noreferrer'}
+                data-title={work.title}
+                data-desc={work.description}
+                data-color={work.color}
+                data-icon={work.icon}
+                data-empty={work.isEmpty ? 'true' : 'false'}
+                aria-label={work.title}
+              >
+                <span class="app-icon" style={`background-color: ${work.color}; --icon-shadow: ${work.color}88`}>
+                  <img src={work.icon} alt="" loading="lazy" />
+                </span>
+                <span class="app-name">{work.title}</span>
+              </Tag>
+            );
+          })}
+        </section>
+      </div>
+
+      <!-- Dock -->
+      <nav class="dock" aria-label="常用入口">
+        {dockItems.map((item) => {
+          const isExternal = item.href.startsWith('http');
+          return (
+            <a
+              class={`dock-item ${item.isModal ? 'dock-item--modal' : ''}`}
+              href={item.href}
+              target={isExternal ? '_blank' : undefined}
+              rel={isExternal ? 'noopener noreferrer' : undefined}
+              data-title={item.title}
+              data-desc={item.desc || item.title}
+              data-href={item.href}
+              data-color={item.color}
+              data-icon={item.icon}
+            >
+              <span class="app-icon" style={`background-color: ${item.color}; --icon-shadow: ${item.color}88`}>
+                <img src={item.icon} alt="" loading="lazy" />
+              </span>
+              <span class="app-name">{item.title}</span>
+            </a>
+          );
+        })}
+      </nav>
+    </div>
+  </main>
+
+  <!-- 应用详情弹窗 -->
+  <div class="app-modal" id="appModal" aria-hidden="true">
+    <div class="app-modal-backdrop"></div>
+    <div class="app-modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" aria-label="关闭">×</button>
+      <div class="modal-header">
+        <span class="modal-icon" id="modalIcon">
+          <img src="" alt="" />
+        </span>
+        <h2 class="modal-title" id="modalTitle"></h2>
+      </div>
+      <p class="modal-desc" id="modalDesc"></p>
+      <a class="modal-link" id="modalLink" href="#" target="_blank" rel="noopener noreferrer">
+        打开应用 →
+      </a>
+    </div>
   </div>
 </BaseLayout>
 
 <script>
   (function () {
-    const THEME_KEY = 'supervivian-theme';
-    const containers = {
-      minimal: document.getElementById('theme-minimal'),
-      anime: document.getElementById('theme-anime'),
-    };
-    const btn = document.getElementById('switcherBtn');
-    const icon = document.getElementById('switcherIcon');
-    const label = document.getElementById('switcherLabel');
+    const apps = document.querySelectorAll('.app-item');
+    const dockItems = document.querySelectorAll('.dock-item');
+    const modal = document.getElementById('appModal');
+    const backdrop = modal?.querySelector('.app-modal-backdrop');
+    const closeBtn = document.getElementById('modalClose');
+    const iconEl = document.getElementById('modalIcon');
+    const iconImg = iconEl?.querySelector('img');
+    const titleEl = document.getElementById('modalTitle');
+    const descEl = document.getElementById('modalDesc');
+    const linkEl = document.getElementById('modalLink');
+    const timeEl = document.getElementById('statusTime');
 
-    function activateTheme(name) {
-      // 切换内容显隐
-      Object.entries(containers).forEach(([key, el]) => {
-        if (!el) return;
-        el.style.display = key === name ? '' : 'none';
+    function updateTime() {
+      if (!timeEl) return;
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      timeEl.textContent = `${h}:${m}`;
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    function openModal(data: {
+      title: string;
+      desc: string;
+      href: string;
+      color: string;
+      icon: string;
+      isEmpty: boolean;
+    }) {
+      if (!modal || !iconEl || !iconImg || !titleEl || !descEl || !linkEl) return;
+      iconImg.src = data.icon;
+      iconEl.style.backgroundColor = data.color;
+      titleEl.textContent = data.title;
+      descEl.textContent = data.desc;
+      linkEl.href = data.href;
+      linkEl.style.backgroundColor = data.color;
+      linkEl.textContent = data.isEmpty ? '敬请期待' : '打开应用 →';
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      if (!modal) return;
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    apps.forEach((app) => {
+      app.addEventListener('click', (e) => {
+        const el = app as HTMLElement;
+        if (el.dataset.empty !== 'true') return;
+        e.preventDefault();
+        openModal({
+          title: el.dataset.title || '',
+          desc: el.dataset.desc || '',
+          href: el.dataset.href || '#',
+          color: el.dataset.color || '#666',
+          icon: el.dataset.icon || '',
+          isEmpty: true,
+        });
       });
-      // 在 html 上标记当前主题
-      document.documentElement.setAttribute('data-theme', name);
-      // 更新按钮文案
-      if (label && icon) {
-        if (name === 'anime') {
-          label.textContent = '简约风格';
-          icon.textContent = '◐';
-        } else {
-          label.textContent = '二次元风';
-          icon.textContent = '🌸';
+    });
+
+    dockItems.forEach((item) => {
+      item.addEventListener('click', (e) => {
+        const el = item as HTMLElement;
+        if (el.classList.contains('dock-item--modal')) {
+          e.preventDefault();
         }
-      }
-      localStorage.setItem(THEME_KEY, name);
-    }
-
-    // 页面加载时恢复主题
-    const saved = localStorage.getItem(THEME_KEY) || 'anime';
-    activateTheme(saved);
-
-    // 点击切换
-    if (btn) {
-      btn.addEventListener('click', function () {
-        const current = document.documentElement.getAttribute('data-theme') || 'anime';
-        const next = current === 'anime' ? 'minimal' : 'anime';
-        activateTheme(next);
+        openModal({
+          title: el.dataset.title || '',
+          desc: el.dataset.desc || '',
+          href: el.dataset.href || '#',
+          color: el.dataset.color || '#666',
+          icon: el.dataset.icon || '',
+          isEmpty: el.classList.contains('dock-item--modal'),
+        });
       });
-    }
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+    backdrop?.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
   })();
 </script>
-
-<style>
-  /* 主题容器 */
-  .theme-container {
-    min-height: 100vh;
-  }
-
-  /* 动漫主题时覆盖 body 样式 */
-  :global(html[data-theme="anime"]) body {
-    background: linear-gradient(135deg, #0f0a1e 0%, #1a1040 30%, #2d1b69 60%, #6b2fa0 100%) !important;
-    color: #f0e6ff !important;
-    font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif !important;
-  }
-
-  /* 简约主题恢复默认 */
-  :global(html[data-theme="minimal"]) body {
-    background: var(--bg-color) !important;
-    color: var(--text-primary) !important;
-    font-family: 'Georgia', 'Times New Roman', serif !important;
-  }
-
-  /* 切换按钮 */
-  .theme-switcher {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 9999;
-  }
-
-  .switcher-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    font-size: 14px;
-    font-family: inherit;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(8px);
-    
-    /* 动画主题下的按钮样式 */
-    background: rgba(255, 255, 255, 0.12);
-    color: #f0e6ff;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-  }
-
-  :global(html[data-theme="minimal"]) .switcher-btn {
-    background: rgba(45, 52, 54, 0.9);
-    color: #faf8f5;
-    border: 1px solid var(--border-color);
-  }
-
-  .switcher-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
-  }
-
-  .switcher-icon {
-    font-size: 18px;
-    line-height: 1;
-  }
-
-  .switcher-label {
-    font-size: 13px;
-    letter-spacing: 1px;
-  }
-
-  @media (max-width: 480px) {
-    .theme-switcher {
-      bottom: 16px;
-      right: 16px;
-    }
-    .switcher-btn {
-      padding: 8px 16px;
-    }
-    .switcher-label {
-      display: none;
-    }
-  }
-</style>

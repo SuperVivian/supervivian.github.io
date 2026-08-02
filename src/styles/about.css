@@ -1,0 +1,309 @@
+:root {
+  /* About 页面专用变量，沿用项目马卡龙粉调 */
+  --about-bg-1: #FFF7F5;
+  --about-bg-2: #FFF0F0;
+  --about-bg-3: #FDE8E8;
+  --about-bg-4: #FCE0E0;
+  --about-cream: #FFF5F2;
+  --about-cream-dark: #FDECE8;
+  --about-text: #5D4E4A;
+  --about-text-light: #8D7B75;
+  --about-line: rgba(141, 110, 110, 0.08);
+  --about-card-bg: rgba(255, 255, 255, 0.72);
+  --about-card-border: rgba(255, 255, 255, 0.8);
+  --about-card-shadow: rgba(93, 64, 55, 0.08);
+  --about-accent: #F4BFBF;
+  --about-accent-2: #AED9F1;
+}
+
+.about-page {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--about-text);
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(255, 200, 210, 0.55) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 55% at 90% 25%, rgba(255, 230, 180, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse 65% 65% at 75% 85%, rgba(200, 220, 255, 0.45) 0%, transparent 50%),
+    radial-gradient(ellipse 55% 50% at 20% 90%, rgba(230, 200, 230, 0.4) 0%, transparent 45%),
+    linear-gradient(180deg, var(--about-bg-1) 0%, var(--about-bg-2) 35%, var(--about-bg-3) 70%, var(--about-bg-4) 100%);
+}
+
+/* 横线纹理 */
+.about-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 31px,
+    var(--about-line) 31px,
+    var(--about-line) 32px
+  );
+  z-index: 0;
+}
+
+.about-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 顶部导航 */
+.about-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 48px;
+}
+
+.about-nav__brand {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: var(--about-text);
+  letter-spacing: 1px;
+}
+
+.about-nav__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--about-card-bg);
+  border: 1px solid var(--about-card-border);
+  box-shadow: 0 4px 16px var(--about-card-shadow);
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--about-text);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.about-nav__back:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--about-card-shadow);
+}
+
+/* 主内容区 */
+.about-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+  align-items: center;
+  flex: 1;
+}
+
+/* 左侧文字 */
+.about-text {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.about-headline {
+  font-family: var(--font-pixel);
+  font-size: clamp(56px, 8vw, 96px);
+  line-height: 1;
+  color: var(--about-accent);
+  text-shadow: 3px 3px 0 rgba(244, 191, 191, 0.25);
+  margin-bottom: -8px;
+}
+
+.about-name {
+  font-family: var(--font-pixel);
+  font-size: clamp(22px, 3.5vw, 32px);
+  letter-spacing: 1px;
+  color: var(--about-text);
+}
+
+.about-role {
+  display: inline-block;
+  width: fit-content;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--about-accent-2);
+  color: #fff;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 14px rgba(174, 217, 241, 0.35);
+}
+
+.about-bio {
+  font-family: var(--font-body);
+  font-size: clamp(16px, 2vw, 20px);
+  line-height: 1.9;
+  color: var(--about-text-light);
+  max-width: 520px;
+}
+
+/* 信息卡片网格 */
+.about-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.about-card {
+  background: var(--about-card-bg);
+  border: 1px solid var(--about-card-border);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 6px 20px var(--about-card-shadow);
+  backdrop-filter: blur(8px);
+  transition: transform 0.2s ease;
+}
+
+.about-card:hover {
+  transform: translateY(-4px);
+}
+
+.about-card__title {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--about-text);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed var(--about-accent);
+  display: inline-block;
+}
+
+.about-card__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.about-card__list li {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--about-text-light);
+  position: relative;
+  padding-left: 16px;
+}
+
+.about-card__list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--about-accent);
+}
+
+/* 右侧人物 */
+.about-visual {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+}
+
+.about-visual__frame {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.about-visual__avatar {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 24px rgba(93, 64, 55, 0.12));
+}
+
+/* 底部链接 */
+.about-footer {
+  margin-top: 48px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--about-card-bg);
+  border: 1px solid var(--about-card-border);
+  box-shadow: 0 4px 16px var(--about-card-shadow);
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--about-text);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.about-link:hover {
+  transform: translateY(-2px);
+  background: #fff;
+}
+
+/* 响应式 */
+@media (max-width: 860px) {
+  .about-hero {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .about-text {
+    order: 2;
+    align-items: center;
+    text-align: center;
+  }
+
+  .about-bio {
+    max-width: 100%;
+  }
+
+  .about-visual {
+    order: 1;
+  }
+
+  .about-visual__frame {
+    max-width: 280px;
+  }
+
+  .about-cards {
+    width: 100%;
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 520px) {
+  .about-container {
+    padding: 32px 18px 48px;
+  }
+
+  .about-nav {
+    margin-bottom: 32px;
+  }
+
+  .about-nav__brand {
+    font-size: 12px;
+  }
+
+  .about-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .about-footer {
+    margin-top: 36px;
+  }
+}

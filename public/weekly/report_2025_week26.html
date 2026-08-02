@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Week 26 复盘表(6.23-6.29)</title>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+            background:
+                radial-gradient(circle at 18% 16%, rgba(224, 241, 201, 0.92) 0, rgba(224, 241, 201, 0) 26%),
+                radial-gradient(circle at 82% 18%, rgba(196, 227, 244, 0.78) 0, rgba(196, 227, 244, 0) 24%),
+                radial-gradient(circle at 30% 72%, rgba(193, 228, 176, 0.55) 0, rgba(193, 228, 176, 0) 30%),
+                repeating-linear-gradient(-12deg, rgba(255, 255, 255, 0.16) 0 12px, rgba(255, 255, 255, 0.02) 12px 24px),
+                linear-gradient(180deg, #edf7e8 0%, #e3f0d8 42%, #e8f4fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-size: 18px;
+            color: #000;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(133, 166, 114, 0.18);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(76, 115, 85, 0.12);
+            backdrop-filter: blur(2px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header-icon {
+            font-size: 34px;
+            margin-bottom: 6px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            color: #2f6b2f;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #2f6b2f;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        .goals-section,
+        .progress-section,
+        .entertainment-section {
+            margin-bottom: 20px;
+        }
+
+        .goals-table,
+        .progress-card,
+        .entertainment-card,
+        .summary-section {
+            position: relative;
+        }
+
+        .goals-table::before,
+        .summary-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(-18deg, rgba(255, 255, 255, 0.08) 0 10px, rgba(255, 255, 255, 0) 10px 20px);
+            pointer-events: none;
+        }
+
+        .goals-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(80, 120, 92, 0.08);
+        }
+
+        .goals-table th {
+            background: linear-gradient(135deg, #d8ebca 0%, #c2dcc7 52%, #dcecf8 100%);
+            padding: 10px 5px;
+            text-align: center;
+            font-weight: 600;
+            color: #000;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+
+        .goals-table td {
+            padding: 8px 5px;
+            text-align: center;
+            border-bottom: 1px solid #e3eddc;
+            font-size: 16px;
+        }
+
+        .goals-table th:nth-child(n+4):nth-child(-n+10),
+        .goals-table td:nth-child(n+4):nth-child(-n+10) {
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        .goals-table tr:hover {
+            background: #f3f8ef;
+        }
+
+        .category-cell {
+            font-weight: 600;
+            color: #355f35;
+            background: linear-gradient(180deg, #eef6e9 0%, #e4f0de 100%);
+            white-space: nowrap;
+            letter-spacing: 1px;
+        }
+
+        .goal-name {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 4px;
+            padding-left: 4px;
+            white-space: nowrap;
+        }
+
+        .quantify-cell {
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .check-mark {
+            color: #4f9a57;
+            font-weight: bold;
+        }
+
+        .completion-rate {
+            --progress: 0%;
+            display: block;
+            width: 100%;
+            padding: 8px 0;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 15px;
+            color: #355835;
+            background:
+                linear-gradient(90deg, #d9ebcd 0%, #cfe6c8 42%, #e3f1db 74%, #eef7e9 100%) 0 0 / var(--progress) 100% no-repeat,
+                linear-gradient(90deg, #fbfdf9 0%, #f2f7ee 100%);
+            box-shadow: inset 0 0 0 1px rgba(124, 157, 114, 0.14);
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px 10px;
+            margin-top: 10px;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: 8px;
+            padding: 8px 10px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+            border-left: 3px solid #6ea561;
+        }
+
+        .progress-day {
+            font-weight: 700;
+            color: #000;
+            font-size: 15px;
+            display: inline;
+            margin-right: 6px;
+        }
+
+        .progress-content {
+            font-size: 14px;
+            color: #000;
+            line-height: 1.35;
+            display: inline;
+        }
+
+        .no-progress {
+            color: #587058;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .entertainment-list {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .entertainment-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(244, 249, 241, 0.96) 100%);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(78, 118, 92, 0.08);
+            border-left: 3px solid #6b9e86;
+        }
+
+        .entertainment-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 5px;
+        }
+
+        .entertainment-icon {
+            font-size: 16px;
+        }
+
+        .entertainment-title {
+            font-weight: bold;
+            color: #000;
+            font-size: 15px;
+        }
+
+        .entertainment-rating {
+            color: #f4c542;
+            font-size: 15px;
+            letter-spacing: 1px;
+            margin-left: auto;
+            text-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+        }
+
+        .entertainment-content {
+            font-size: 15px;
+            color: #000;
+            line-height: 1.45;
+            padding-left: 20px;
+        }
+
+        .summary-section {
+            background: linear-gradient(135deg, rgba(250, 252, 247, 0.98) 0%, rgba(239, 247, 233, 0.96) 58%, rgba(234, 244, 249, 0.94) 100%);
+            border: 1px solid rgba(130, 165, 120, 0.22);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .summary-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 10px;
+            margin-bottom: 10px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(148, 182, 138, 0.24);
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #000;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .score-display {
+            text-align: left;
+            margin: 4px 0 8px;
+            font-size: 17px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .summary-lists {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .summary-list {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .summary-list h4 {
+            margin-bottom: 0;
+            font-size: 16px;
+            display: inline;
+            margin-right: 6px;
+        }
+
+        .summary-list .inline-items {
+            font-size: 15px;
+            color: #000;
+            display: inline;
+            line-height: 1.5;
+        }
+
+        .summary-list .inline-item {
+            display: inline;
+            margin-right: 14px;
+        }
+
+        .good-list .inline-item::before {
+            content: '①';
+            color: #000;
+            font-weight: 700;
+            margin-right: 2px;
+        }
+
+        .bad-list .inline-item::before {
+            content: '①';
+            color: #000;
+            font-weight: 700;
+            margin-right: 2px;
+        }
+
+        .good-list .inline-item:nth-of-type(2)::before,
+        .bad-list .inline-item:nth-of-type(2)::before {
+            content: '②';
+        }
+
+        .good-list .inline-item:nth-of-type(3)::before,
+        .bad-list .inline-item:nth-of-type(3)::before {
+            content: '③';
+        }
+
+        
+    
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .goals-table {
+                font-size: 13px;
+                width: 100%;
+            }
+
+            .goals-table th,
+            .goals-table td {
+                padding: 7px 4px;
+            }
+
+            /* 表头统一背景 */
+            .goals-table thead th {
+                background: linear-gradient(90deg, #e8f4e3 0%, #d9ebcd 100%);
+            }
+
+            /* 分类列 */
+            .goals-table .category-cell {
+                width: 40px;
+                font-size: 11px;
+                text-align: center;
+                padding: 8px 2px;
+            }
+
+            /* 目标列允许换行 */
+            .goals-table .goal-name {
+                white-space: normal;
+                line-height: 1.35;
+                word-break: break-word;
+                font-size: 13px;
+            }
+
+            /* 量化列居中 */
+            .goals-table .quantify-cell {
+                width: 58px;
+                text-align: center;
+                font-size: 12px;
+            }
+
+            /* 完成率列 */
+            .goals-table td:has(.completion-rate) {
+                width: 48px;
+                text-align: right;
+                padding-right: 6px;
+            }
+
+            .completion-rate {
+                display: inline !important;
+                width: auto !important;
+                background: transparent !important;
+                background-image: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 12px !important;
+                color: #2f6b2f !important;
+                font-weight: 700 !important;
+                white-space: nowrap !important;
+            }
+
+            .completion-rate::before,
+            .completion-rate::after {
+                display: none !important;
+            }
+
+            .progress-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-lists {
+                gap: 8px;
+            }
+        }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<div class="header-icon">📅</div>
+<h1>Week 26 复盘表(6.23-6.29)</h1>
+</div>
+<div class="goals-section">
+<h2 class="section-title">🎯 目标清单</h2>
+<table class="goals-table">
+<thead>
+<tr>
+<th style="width: 15%;">分类</th>
+<th style="width: 45%;">目标</th>
+<th style="width: 20%;">量化</th>
+
+
+
+
+
+
+
+<th style="width: 20%;">完成率</th>
+
+</tr>
+</thead>
+<tbody>
+<tr><td class="category-cell" rowspan="7">生活</td><td><div class="goal-name">🛁 洗澡</div></td><td class="quantify-cell">3次/周</td><td><span class="completion-rate" style="--progress: 33%;">33%</span></td></tr>
+<tr><td><div class="goal-name">🍭 晚上戒零食</div></td><td class="quantify-cell">7次/周</td><td><span class="completion-rate" style="--progress: 42%;">42%</span></td></tr>
+<tr><td><div class="goal-name">💰 记账</div></td><td class="quantify-cell">1次/周</td><td><span class="completion-rate" style="--progress: 100%;">100%</span></td></tr>
+<tr><td><div class="goal-name">🐱 做铲屎官</div></td><td class="quantify-cell">3次/周</td><td><span class="completion-rate" style="--progress: 100%;">100%</span></td></tr>
+<tr><td><div class="goal-name">🧹 打扫卫生</div></td><td class="quantify-cell">7次/周</td><td><span class="completion-rate" style="--progress: 42%;">42%</span></td></tr>
+<tr><td><div class="goal-name">🌙 早睡-1点前</div></td><td class="quantify-cell">7次/周</td><td><span class="completion-rate" style="--progress: 42%;">42%</span></td></tr>
+<tr><td><div class="goal-name">💧 喝水</div></td><td class="quantify-cell">7次/周</td><td><span class="completion-rate" style="--progress: 71%;">71%</span></td></tr>
+<tr><td class="category-cell" rowspan="2">养生</td><td><div class="goal-name">💩 人生大事</div></td><td class="quantify-cell">7次/周</td><td><span class="completion-rate" style="--progress: 42%;">42%</span></td></tr>
+<tr><td><div class="goal-name">🧘 拉伸</div></td><td class="quantify-cell">7次/周</td><td><span class="completion-rate" style="--progress: 28%;">28%</span></td></tr>
+<tr><td class="category-cell" rowspan="2">学习</td><td><div class="goal-name">😊 每天进步一点点</div></td><td class="quantify-cell">7次/周</td><td><span class="completion-rate" style="--progress: 85%;">85%</span></td></tr>
+<tr><td><div class="goal-name">📚 阅读</div></td><td class="quantify-cell">7次/周</td><td><span class="completion-rate" style="--progress: 71%;">71%</span></td></tr>
+<tr><td class="category-cell" rowspan="1">情感</td><td><div class="goal-name">📱 保持联系</div></td><td class="quantify-cell">3次/周</td><td><span class="completion-rate" style="--progress: 33%;">33%</span></td></tr>
+</tbody>
+</table>
+</div>
+<div class="progress-section">
+<h2 class="section-title">😊 每天进步一点点</h2>
+<div class="progress-grid">
+<div class="progress-card"><div class="progress-day">周一：</div><div class="progress-content">学会用 Unity Profiler 定位 CPU 卡点</div></div>
+<div class="progress-card"><div class="progress-day">周二：</div><div class="progress-content">知道了可以用 SQL 分析游戏数据</div></div>
+<div class="progress-card"><div class="progress-day">周三：</div><div class="progress-content">看到更细的生活管理分工，也拓宽了视野</div></div>
+<div class="progress-card"><div class="progress-day">周四：</div><div class="progress-content">用 AI 完成了一份分析报告</div></div>
+<div class="progress-card"><div class="progress-day">周五：</div><div class="progress-content">用 AI 做了美剧台词分析项目</div></div>
+<div class="progress-card"><div class="progress-day">周六：</div><div class="progress-content">开始接触分镜</div></div>
+</div>
+</div>
+<div class="entertainment-section">
+<h2 class="section-title">📺 劳逸结合</h2>
+<div class="entertainment-list">
+<div class="entertainment-card"><div class="entertainment-header"><span class="entertainment-icon">📖</span><span class="entertainment-title">《每天六千万，只能在县城花》</span><span class="entertainment-rating">★★★★☆</span></div><div class="entertainment-content">打开了我看神豪文的新世界，因为人民史观，还是给了我不少启发，就是后面有点同质化了，另外3个女主有点选妃的感觉。</div></div>
+<div class="entertainment-card"><div class="entertainment-header"><span class="entertainment-icon">📖</span><span class="entertainment-title">《账户锁定千亿英镑，我全职花钱》</span><span class="entertainment-rating">★★★☆☆</span></div><div class="entertainment-content">神豪文的不同视角，从小女生的角度出发，但是更符合我的视角，感觉钱不是钱了hhh，真的爽。</div></div>
+</div>
+</div>
+<div class="summary-section">
+<h2 class="section-title">📊 本周小结</h2>
+<div class="summary-stats">
+<div class="stat-item"><div class="stat-label">📚 阅读时间：</div><div class="stat-value">1小时7分钟</div></div>
+<div class="stat-item"><div class="stat-label">🏃 运动时间：</div><div class="stat-value">22分钟</div></div>
+</div>
+<div class="score-display">✨ 评分：68 分</div>
+<div class="summary-lists">
+<div class="summary-list good-list">
+<h4>好：</h4>
+<div class="inline-items">
+<span class="inline-item">用 AI 完成了分析报告和美剧台词分析</span><span class="inline-item">阅读坚持较好，完成 5 天</span><span class="inline-item">每天进步一点点完成 6 天</span>
+</div>
+</div>
+<div class="summary-list bad-list">
+<h4>坏：</h4>
+<div class="inline-items">
+<span class="inline-item">早睡执行一般，仅完成 3 天</span><span class="inline-item">拉伸坚持度不够，仅完成 2 天</span><span class="inline-item">周初生活记录偏少</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

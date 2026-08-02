@@ -1,26 +1,57 @@
+:root {
+  /* 暖棕木质色调 */
+  --wood-dark: #2c1e0f;
+  --wood-mid: #4a3020;
+  --wood-light: #6b4423;
+  --paper: #fdf6e3;
+  --paper-dim: #c8b89a;
+  --paper-muted: #8a7060;
+
+  /* 作品主题色 */
+  --color-xmas: #e8c07a;
+  --color-persona: #2980b9;
+  --color-love: #c0392b;
+  --color-compiler: #8e44ad;
+  --color-zhexue: #27ae60;
+  --color-empty: #4a4a5a;
+
+  /* 功能色 */
+  --shadow: rgba(0, 0, 0, 0.55);
+  --shadow-soft: rgba(0, 0, 0, 0.25);
+  --highlight: #ff6b6b;
+
+  /* 书架定位变量（换背景图后微调） */
+  --shelf-top: 36%;
+  --shelf-left: 18%;
+  --shelf-width: 64%;
+  --book-width: 40px;
+  --book-height: 140px;
+
+  /* 字体：像素标题 + 圆润正文 */
+  --font-pixel: 'Press Start 2P', 'Xiaolai SC', 'PingFang SC', 'Microsoft YaHei', monospace;
+  --font-body: 'Yozai', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-:root {
-  --bg-color: #faf8f5;
-  --text-primary: #2d3436;
-  --text-secondary: #636e72;
-  --accent-yellow: #ffeaa7;
-  --accent-cyan: #81ecec;
-  --accent-pink: #fab1a0;
-  --border-color: #2d3436;
-  --card-bg: #ffffff;
+html,
+body {
+  min-height: 100%;
+  overflow-x: hidden;
 }
 
 body {
-  font-family: 'Georgia', 'Times New Roman', serif;
-  background-color: var(--bg-color);
-  color: var(--text-primary);
+  font-family: var(--font-body);
+  background-color: var(--wood-dark);
+  color: var(--paper);
   line-height: 1.6;
-  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: pixelated;
 }
 
 a {
@@ -28,15 +59,14 @@ a {
   text-decoration: none;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
 }
 
-/* 响应式 */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 16px;
-  }
+img {
+  max-width: 100%;
+  display: block;
 }
