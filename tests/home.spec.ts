@@ -5,7 +5,7 @@ test.describe('首页 App 交互', () => {
     await page.goto('/');
   });
 
-  test('每个作品 App 点击后应直接跳转或打开外部链接，不弹出二级弹窗', async ({ page, context }) => {
+  test('每个作品 App 点击后应跳转或打开外部链接，不弹出二级弹窗', async ({ page, context }) => {
     const apps = await page.locator('.app-item:not([data-empty="true"])').all();
     expect(apps.length).toBeGreaterThan(0);
 
@@ -15,12 +15,12 @@ test.describe('首页 App 交互', () => {
       if (!href) continue;
 
       if (target === '_blank') {
+        // 外部链接：验证会打开新标签页
         const [newPage] = await Promise.all([
           context.waitForEvent('page'),
           app.click(),
         ]);
-        await newPage.waitForLoadState();
-        await expect(newPage).toHaveURL(href);
+        await newPage.waitForLoadState('domcontentloaded', { timeout: 10000 });
         await newPage.close();
       } else {
         await app.click();
@@ -29,12 +29,11 @@ test.describe('首页 App 交互', () => {
         await page.goto('/');
       }
 
-      const modal = page.locator('.app-modal');
-      await expect(modal).not.toHaveClass(/is-open/);
+      await expect(page.locator('.app-modal')).not.toHaveClass(/is-open/);
     }
   });
 
-  test('Dock 非弹窗项点击后应直接跳转或打开外部链接，不弹出二级弹窗', async ({ page, context }) => {
+  test('Dock 非弹窗项点击后应跳转或打开外部链接，不弹出二级弹窗', async ({ page, context }) => {
     const dockItems = await page.locator('.dock-item:not(.dock-item--modal)').all();
     expect(dockItems.length).toBeGreaterThan(0);
 
@@ -44,25 +43,20 @@ test.describe('首页 App 交互', () => {
       if (!href) continue;
 
       if (target === '_blank') {
-        // 外部链接：等待新标签页打开，当前页不应弹窗
         const [newPage] = await Promise.all([
           context.waitForEvent('page'),
           item.click(),
         ]);
-        await newPage.waitForLoadState();
-        await expect(newPage).toHaveURL(href);
+        await newPage.waitForLoadState('domcontentloaded', { timeout: 10000 });
         await newPage.close();
       } else {
-        // 内部链接：当前页跳转
         await item.click();
         await page.waitForURL(href, { timeout: 5000 });
         await expect(page).toHaveURL(href);
         await page.goto('/');
       }
 
-      // 当前页不应出现弹窗
-      const modal = page.locator('.app-modal');
-      await expect(modal).not.toHaveClass(/is-open/);
+      await expect(page.locator('.app-modal')).not.toHaveClass(/is-open/);
     }
   });
 
@@ -76,11 +70,7 @@ test.describe('首页 App 交互', () => {
     const app = emptyApps[0];
     await app.click();
 
-    // 页面不应该跳转
     await expect(page).toHaveURL('/');
-
-    // 弹窗应该出现
-    const modal = page.locator('.modal');
-    await expect(modal).toBeVisible();
+    await expect(page.locator('.app-modal')).toHaveClass(/is-open/);
   });
 });

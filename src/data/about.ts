@@ -33,7 +33,7 @@ export const aboutInfo: AboutInfo = {
   name: 'supervivian',
   role: 'Creative Programmer',
   bio: '相信代码也是一种创作语言。喜欢用技术把想法变成可交互的小世界，在日常里收集灵感，把琐碎和温柔都装进作品中。',
-  avatar: '/assets/about-avatar.png',
+  avatar: '/assets/about-avatar.webp',
   cards: [
     {
       title: '喜欢的事',

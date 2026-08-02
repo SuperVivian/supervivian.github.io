@@ -263,11 +263,16 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.75);
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: 0 4px 20px rgba(141, 110, 110, 0.08);
+}
+@supports (backdrop-filter: blur(8px)) and (not (hover: none)) {
+  .dock {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(8px);
+  }
 }
 
 .dock .app-icon {
@@ -306,8 +311,13 @@
 .app-modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(141, 110, 110, 0.35);
-  backdrop-filter: blur(4px);
+  background: rgba(141, 110, 110, 0.45);
+}
+@supports (backdrop-filter: blur(4px)) and (not (hover: none)) {
+  .app-modal-backdrop {
+    background: rgba(141, 110, 110, 0.35);
+    backdrop-filter: blur(4px);
+  }
 }
 
 .app-modal-card {
