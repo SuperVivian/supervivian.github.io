@@ -73,9 +73,9 @@ const weeklyItems = [
   }
 
   .weekly-sidebar {
-    width: 220px;
+    width: 260px;
     flex-shrink: 0;
-    padding: 24px 16px;
+    padding: 28px 20px;
     background: rgba(255, 255, 255, 0.75);
     border-right: 1px solid rgba(255, 255, 255, 0.6);
   }
@@ -90,14 +90,17 @@ const weeklyItems = [
   .weekly-back {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 10px 14px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.7);
+    gap: 8px;
+    padding: 14px 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.85);
     color: #5D4E4A;
-    font-size: 10px;
+    font-family: var(--font-pixel);
+    font-size: 14px;
+    font-weight: 700;
     text-decoration: none;
     transition: background 0.15s ease, transform 0.15s ease;
+    box-shadow: 0 4px 14px rgba(141, 110, 110, 0.1);
   }
 
   .weekly-back:hover {
@@ -114,15 +117,16 @@ const weeklyItems = [
   .weekly-menu-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
-    padding: 12px 14px;
+    padding: 16px 18px;
     border: none;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.55);
     color: #5D4E4A;
     font-family: var(--font-pixel);
-    font-size: 9px;
+    font-size: 13px;
+    font-weight: 700;
     text-align: left;
     cursor: pointer;
     transition: background 0.15s ease, transform 0.15s ease;
@@ -153,10 +157,14 @@ const weeklyItems = [
     flex: 1;
     padding: 24px;
     min-width: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
   }
 
   .weekly-frame {
     width: 100%;
+    max-width: 900px;
     height: calc(100vh - 48px);
     border: none;
     border-radius: 18px;
