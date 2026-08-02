@@ -433,18 +433,98 @@
 
 @media (min-width: 768px) {
   :root {
-    --phone-width: 400px;
-    --phone-height: 800px;
-    --font-size-app-name: 10px;
+    --phone-width: 460px;
+    --phone-height: 920px;
+    --font-size-app-name: 11px;
+    --font-size-status-clock: 15px;
+    --font-size-dock-label: 10px;
+    --font-size-section-title: 16px;
+  }
+
+  .mobile-home {
+    padding: 40px 24px;
   }
 
   .app-icon {
-    width: 62px;
-    height: 62px;
+    width: 68px;
+    height: 68px;
   }
 
   .app-icon img {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
+  }
+
+  .app-grid {
+    gap: 18px 14px;
+  }
+
+  .dock-item {
+    width: 58px;
+    height: 58px;
+  }
+
+  .dock-item img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .header-title {
+    font-size: 32px;
+  }
+
+  .phone-status {
+    padding: 12px 18px;
+  }
+
+  .page-header {
+    padding: 18px 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --phone-width: 520px;
+    --phone-height: 1040px;
+    --font-size-app-name: 12px;
+    --font-size-status-clock: 17px;
+    --font-size-dock-label: 11px;
+    --font-size-section-title: 18px;
+  }
+
+  .mobile-home {
+    padding: 48px 32px;
+  }
+
+  .app-icon {
+    width: 78px;
+    height: 78px;
+  }
+
+  .app-icon img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .app-grid {
+    gap: 22px 18px;
+  }
+
+  .dock-item {
+    width: 66px;
+    height: 66px;
+  }
+
+  .dock-item img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .header-title {
+    font-size: 38px;
+  }
+
+  .page-header {
+    padding: 22px 28px;
   }
 }
