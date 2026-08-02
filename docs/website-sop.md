@@ -63,14 +63,26 @@
 
 ```
 src/
-├── data/works.ts
+├── data/
+│   ├── about.ts
+│   ├── dock.ts
+│   └── works.ts
 ├── layouts/BaseLayout.astro
-├── pages/index.astro
-└── styles/
-    ├── global.css
-    └── home.css
+├── pages/
+│   ├── index.astro
+│   ├── about.astro
+│   └── weekly.astro
+├── styles/
+│   ├── about.css
+│   ├── global.css
+│   └── mobile-home.css
+└── tests/
+    ├── home.spec.ts
+    ├── links.spec.ts
+    └── sakura-street.spec.ts
 public/
-├── assets/icons/
+├── assets/
+│   └── icons/
 └── works/
 ```
 
@@ -116,26 +128,39 @@ export const works = [
 |--------|------|
 | 构建是否成功 | `npm run build` |
 | 移动端效果 | 浏览器 DevTools 375px |
-| 实际渲染 | Playwright 截图 |
-| 链接是否正常 | 逐个点击验证 |
+| 自动化测试 | `npm run test`（Playwright） |
+| 链接是否正常 | `tests/links.spec.ts` 自动检查 |
+| 性能测试 | 关键页面加载时间 < 3s |
 | 缓存问题 | URL 加版本号 `?v=2` |
+
+**Playwright 测试原则**：
+- 首页 App 点击后应正确跳转，非弹窗项不应打开弹窗。
+- 外部链接用 `target="_blank"` 打开，测试中不验证具体 URL。
+- 关键作品页（Three.js、复杂动画）必须有性能测试。
 
 ### 11. 构建部署
 
 ```bash
 npm run build
+npm run test
 git add .
 git commit -m "feat: xxx"
-git push origin master
+git push origin main
 ```
 
 GitHub Actions 自动部署到 GitHub Pages。
+
+**部署前必须确认**：
+- 代码已提交到本地 `main`。
+- `npm run build` 和 `npm run test` 均通过。
+- 用户已明确同意推送（不要擅自部署）。
 
 ### 12. 维护迭代
 
 - 新增作品：改 `works.ts` + 加 SVG 图标
 - 调整样式：改 CSS 变量
 - 修改配色：更新设计系统和 CSS 变量
+- CI 报错：优先检查 GitHub Actions Node 版本是否与 runner 兼容
 
 ## 四、检查清单
 
@@ -144,10 +169,13 @@ GitHub Actions 自动部署到 GitHub Pages。
 - [ ] 设计系统文档已创建
 - [ ] CSS 变量已提取
 - [ ] 首页结构清晰
+- [ ] 桌面端字体/按钮尺寸已检查（避免需要手动放大浏览器）
 - [ ] 移动端适配完成
 - [ ] 所有链接可点击
 - [ ] `npm run build` 成功
+- [ ] `npm run test` 通过
 - [ ] 已截图验证关键页面
+- [ ] 用户已确认部署
 - [ ] 已推送到部署分支
 
 ## 五、常见问题
@@ -162,10 +190,22 @@ A：先收集参考图，提取主色和辅色，写入设计系统文档，后�
 A：个人站点建议 SVG，风格统一且可控。
 
 **Q：改完样式怎么生效？**
-A：本地用 `npm run dev`，部署用 `npm run build` + `git push`。
+A：本地用 `npm run dev`，部署用 `npm run build` + `npm run test` + `git push`。
 
 **Q：表格在手机上怎么适配？**
 A：隐藏非必要列，减少列数，必要时改成卡片列表。
+
+**Q：页面加载很慢怎么办？**
+A：优先排查三件事：
+1. 中文字体是否阻塞首屏 → 加 `font-display: swap` 或延迟加载。
+2. 图片是否过大 → 压缩为 webp/avif。
+3. 是否有复杂 Three.js / backdrop-filter → 移动端降配或禁用。
+
+**Q：GitHub Actions 构建失败怎么办？**
+A：先查看报错信息。如果是 Node 版本相关（如 "Node.js 20 is deprecated"），升级 `.github/workflows/deploy.yml` 中的 `node-version`。
+
+**Q：为什么部署前要先问用户？**
+A：避免半成品上线。提交到本地后等待用户确认再 `git push origin main`，确保每次部署都是用户认可的版本。
 
 ## 六、参考文件
 

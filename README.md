@@ -85,25 +85,34 @@ export interface Work {
 ```
 src/
 ├── data/
+│   ├── about.ts            # About 页面数据
+│   ├── dock.ts             # Dock 入口数据
 │   └── works.ts            # 作品数据
 ├── layouts/
-│   └── BaseLayout.astro    # 基础布局（字体、全局样式）
+│   └── BaseLayout.astro    # 基础布局（字体、全局样式、loading）
 ├── pages/
 │   ├── index.astro         # 首页（手机桌面）
+│   ├── about.astro         # 个人简介页
 │   └── weekly.astro        # 周报聚合页
-└── styles/
-    ├── global.css          # 全局像素风变量与重置
-    └── mobile-home.css     # 手机桌面首页样式
+├── styles/
+│   ├── about.css           # About 页面样式
+│   ├── global.css          # 全局像素风变量与重置
+│   └── mobile-home.css     # 手机桌面首页样式
+└── tests/                  # Playwright 自动化测试
+    ├── home.spec.ts
+    ├── links.spec.ts
+    └── sakura-street.spec.ts
 
 public/
 ├── assets/
+│   ├── about-avatar.webp   # About 页头像
 │   └── icons/              # SVG 图标
 ├── weekly/                 # 周报 HTML
 └── works/                  # 作品文件夹（直接访问路径）
 
 docs/
 ├── design-system.md        # 设计系统规范
-└── midjourney-prompts.md   # 设计素材提示词参考
+└── website-sop.md          # 网站构建与维护 SOP
 ```
 
 ## 快速开始
@@ -120,6 +129,12 @@ npm run build
 
 # 预览构建结果
 npm run preview
+
+# 运行自动化测试（构建 + 启动 preview + 执行 Playwright）
+npm run test
+
+# 调试用 UI 模式运行测试
+npm run test:ui
 ```
 
 ## 添加新作品
@@ -142,15 +157,17 @@ npm run preview
 
 ## 部署
 
-本项目使用 GitHub Actions 自动部署到 GitHub Pages，触发分支为 `master`。
+本项目使用 GitHub Actions 自动部署到 GitHub Pages，触发分支为 `main`。
 
 ```bash
 git add .
 git commit -m "update site"
-git push origin master
+git push origin main
 ```
 
 部署完成后访问：`https://supervivian.github.io/`
+
+**注意**：GitHub Actions 的 Node 版本需要跟随 runner 更新。当前 `.github/workflows/deploy.yml` 使用 Node 22。如果构建报 Node 版本相关错误，优先升级 `actions/setup-node` 的 `node-version`。
 
 ## 历史方案
 
@@ -232,6 +249,29 @@ Astro 生成纯静态 HTML，配合 GitHub Actions 自动部署，流程简单�
 - 给静态资源 URL 加版本号，如 `avatar.svg?v=2`。
 - 调试时按 `Ctrl + F5` 强制刷新。
 - 用 Playwright 截图验证实际渲染效果。
+
+### 9. 性能问题通常来自字体和大图
+
+实际遇到的性能瓶颈：
+
+- 中文字体文件大（2-5MB），会阻塞首屏。改用 `font-display: swap` 或延迟加载。
+- 背景图/头像未压缩。`about-avatar.png` 从 649KB 压到 52KB 的 webp。
+- 复杂 Three.js 场景在手机上卡顿。按设备降配（减少粒子、降低阴影质量）。
+- `backdrop-filter: blur()` 在移动端消耗大，可针对手机禁用。
+
+### 10. 必须有自动化测试再部署
+
+使用 Playwright 覆盖：
+
+- 首页 App 点击后正确跳转，不弹窗。
+- 全站内部链接 200。
+- 关键作品页（如樱花街道）3 秒内加载完成。
+
+测试命令：`npm run test`。部署前跑一遍能避免很多上线后才发现的问题。
+
+### 11. GitHub Actions 需要持续维护
+
+GitHub runner 升级后，旧 Node 版本可能导致构建失败。例如 Node 20 被废弃后，需要把 `.github/workflows/deploy.yml` 里的 `node-version` 升级到 22 或更高。
 
 ## 参考资源
 
