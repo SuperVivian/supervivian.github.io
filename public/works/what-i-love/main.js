@@ -1,8 +1,15 @@
 /* ==============================
-   what i love · 100个圆形泡泡 · 碰撞挤压
+   what i love · 100个圆形泡泡 · 碰撞挤压（优化版）
    ============================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const loadingEl = document.getElementById('loading');
+  function hideLoading() {
+    if (!loadingEl) return;
+    loadingEl.classList.add('hidden');
+    setTimeout(() => loadingEl.remove(), 500);
+  }
+
   const items = [
     '睡觉', '吃面', '美剧', '存钱', '沙发瘫', '贴贴', '小蛋糕', 'Action', '整理',
     '喝茶', '咖啡', '游戏', '说废话', '云朵发呆', '听歌', '看小说', '猫咪',
@@ -30,18 +37,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const cw = container.offsetWidth || 900;
   const ch = container.offsetHeight || 700;
 
-  // 中心圆形禁区（角色区域）- 正中央
   const cx = cw / 2;
   const cy = ch / 2;
-  const centerR = Math.min(cw, ch) * 0.15; // 禁区半径
+  const centerR = Math.min(cw, ch) * 0.15;
 
-  // 每个泡泡对象
   const bubbles = [];
-  const padding = 3; // 泡泡之间的间距 px
+  const padding = 3;
 
   items.forEach((name, i) => {
-    const r = (64 + (i % 7) * 5) / 2; // 半径 32~47px
-    // 初始：从中心向外随机生成
+    const r = (64 + (i % 7) * 5) / 2;
     const angle = Math.random() * Math.PI * 2;
     const dist = centerR + r + padding + 5 + Math.random() * 200;
     const x = cx + Math.cos(angle) * dist;
@@ -55,51 +59,83 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ===== 碰撞挤压迭代 =====
-  const ITERATIONS = 200;
+  // ===== 空间网格 + 碰撞挤压 =====
+  const ITERATIONS = 120; // 迭代次数适当减少，效果足够
+  const CELL_SIZE = 120;  // 网格大小
 
-  function dist(a, b) {
-    return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+  function buildGrid() {
+    const grid = new Map();
+    for (let i = 0; i < bubbles.length; i++) {
+      const b = bubbles[i];
+      const gx = Math.floor(b.x / CELL_SIZE);
+      const gy = Math.floor(b.y / CELL_SIZE);
+      const key = `${gx},${gy}`;
+      if (!grid.has(key)) grid.set(key, []);
+      grid.get(key).push(i);
+    }
+    return grid;
+  }
+
+  function resolvePair(a, b) {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    const d2 = dx * dx + dy * dy;
+    const minD = a.r + b.r + padding;
+    if (d2 === 0 || d2 >= minD * minD) return;
+    const d = Math.sqrt(d2);
+    const push = (minD - d) * 0.3;
+    const nx = dx / d;
+    const ny = dy / d;
+    a.x += nx * push;
+    a.y += ny * push;
+    b.x -= nx * push;
+    b.y -= ny * push;
   }
 
   for (let iter = 0; iter < ITERATIONS; iter++) {
-    // 每个泡泡与中心禁区
+    // 与中心禁区碰撞
     for (const b of bubbles) {
-      const d = dist(b, { x: cx, y: cy });
+      const dx = b.x - cx;
+      const dy = b.y - cy;
+      const d = Math.sqrt(dx * dx + dy * dy);
       const minD = centerR + b.r + padding;
       if (d < minD && d > 0.001) {
         const push = (minD - d) * 0.3;
-        b.x += ((b.x - cx) / d) * push;
-        b.y += ((b.y - cy) / d) * push;
+        b.x += (dx / d) * push;
+        b.y += (dy / d) * push;
       }
     }
 
-    // 泡泡之间碰撞
-    for (let i = 0; i < bubbles.length; i++) {
-      for (let j = i + 1; j < bubbles.length; j++) {
-        const a = bubbles[i], b = bubbles[j];
-        const d = dist(a, b);
-        const minD = a.r + b.r + padding;
-        if (d < minD && d > 0.001) {
-          const push = (minD - d) * 0.3;
-          const dx = (a.x - b.x) / d;
-          const dy = (a.y - b.y) / d;
-          a.x += dx * push;
-          a.y += dy * push;
-          b.x -= dx * push;
-          b.y -= dy * push;
+    // 泡泡之间碰撞（空间网格优化）
+    const grid = buildGrid();
+    for (const [key, idxs] of grid) {
+      const [gx, gy] = key.split(',').map(Number);
+      const neighborKeys = [
+        `${gx},${gy}`, `${gx + 1},${gy}`, `${gx},${gy + 1}`, `${gx + 1},${gy + 1}`,
+        `${gx - 1},${gy}`, `${gx},${gy - 1}`, `${gx - 1},${gy - 1}`, `${gx + 1},${gy - 1}`, `${gx - 1},${gy + 1}`,
+      ];
+
+      const neighbors = [];
+      for (const nk of neighborKeys) {
+        if (grid.has(nk)) neighbors.push(...grid.get(nk));
+      }
+
+      for (let i = 0; i < idxs.length; i++) {
+        for (let j = i + 1; j < neighbors.length; j++) {
+          resolvePair(bubbles[idxs[i]], bubbles[neighbors[j]]);
         }
       }
     }
 
-    // 边界约束（保留 5px 边距）
+    // 边界约束
     for (const b of bubbles) {
       b.x = Math.max(b.r + 5, Math.min(cw - b.r - 5, b.x));
       b.y = Math.max(b.r + 5, Math.min(ch - b.r - 5, b.y));
     }
   }
 
-  // ===== 渲染 =====
+  // ===== 分帧渲染 =====
+  const fragment = document.createDocumentFragment();
   for (const b of bubbles) {
     const xPct = (b.x / cw * 100).toFixed(1);
     const yPct = (b.y / ch * 100).toFixed(1);
@@ -114,22 +150,25 @@ document.addEventListener('DOMContentLoaded', () => {
       `--c:${b.c};--rot:${b.rot.toFixed(1)}deg;` +
       `font-size:${Math.max(11, b.r * 0.35)}px;`;
 
-    // 随机边框圆角取不同风格（但保持圆形主题）
     const style = Math.random();
+    el.style.borderRadius = '50%';
     if (style < 0.33) {
-      el.style.borderRadius = '50%';
       el.style.border = `2.5px solid ${b.c}`;
       el.style.background = `rgba(255,255,255,0.5)`;
     } else if (style < 0.66) {
-      el.style.borderRadius = '50%';
       el.style.border = `3px dashed ${b.c}`;
       el.style.background = `rgba(255,255,255,0.4)`;
     } else {
-      el.style.borderRadius = '50%';
       el.style.border = `2px dotted ${b.c}`;
       el.style.background = `rgba(255,255,255,0.6)`;
     }
 
-    container.appendChild(el);
+    fragment.appendChild(el);
   }
+
+  // 使用 requestAnimationFrame 让首屏先绘制 loading，避免白屏
+  requestAnimationFrame(() => {
+    container.appendChild(fragment);
+    requestAnimationFrame(hideLoading);
+  });
 });

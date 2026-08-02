@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>人格大陆 · Persona Realm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="map_bg.webp" type="image/webp">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -466,7 +469,7 @@
     </defs>
 
     <!-- ====== AI 生成的手绘底图 ====== -->
-    <image href="map_bg.png" x="0" y="0" width="1536" height="1024" preserveAspectRatio="xMidYMid slice"/>
+    <image href="map_bg.webp" x="0" y="0" width="1536" height="1024" preserveAspectRatio="xMidYMid slice"/>
 
     <!-- 暗角（让图标更突出） -->
     <rect x="0" y="0" width="1536" height="1024" fill="url(#vignette)" pointer-events="none"/>
@@ -917,12 +920,22 @@ updateProgress();
    地图自适应（SVG viewBox 已经自动缩放，无需平移/缩放交互）
    ========================================================= */
 
-// 加载动画
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('loading').classList.add('hide');
-  }, 800);
-});
+// 加载动画：DOM 和首屏资源就绪后尽快隐藏
+function hideLoading() {
+  const loading = document.getElementById('loading');
+  if (loading) loading.classList.add('hide');
+}
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  requestAnimationFrame(hideLoading);
+} else {
+  document.addEventListener('DOMContentLoaded', () => {
+    requestAnimationFrame(hideLoading);
+  });
+}
+
+// 兜底：window load 后确保隐藏
+window.addEventListener('load', hideLoading);
 
 </script>
 </body>
