@@ -34,11 +34,11 @@ export const works: Work[] = [
     icon: '/assets/icons/heart.svg',
   },
   {
-    title: '编译原理入门',
-    description: '2小时，从零实现一个迷你编译器',
+    title: '计算机入门',
+    description: '从编译原理到操作系统，核心知识体系梳理',
     href: 'https://supervivian.github.io/compiler-intro/',
     color: '#D7BDE2',
-    spine: 'COMPILER',
+    spine: 'CS-INTRO',
     icon: '/assets/icons/gear.svg',
   },
   {

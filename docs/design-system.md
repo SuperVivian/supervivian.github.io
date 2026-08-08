@@ -77,7 +77,7 @@ background:
 | Christmas Night | `#F4BFBF` |
 | Persona Map | `#AED9F1` |
 | What I Love | `#F9D5A7` |
-| 编译原理入门 | `#D7BDE2` |
+| 计算机入门 | `#D7BDE2` |
 | 个人哲学入门 | `#A9DFBF` |
 | ???（占位） | `#E0D5C8` |
 
