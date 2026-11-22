@@ -21,7 +21,7 @@ export interface TalkTheme {
 }
 
 const fengSlides = Array.from(
-  { length: 19 },
+  { length: 16 },
   (_, i) => `/talks/autumn-2026/feng/slides/${String(i + 1).padStart(2, '0')}.webp`,
 );
 
@@ -45,7 +45,7 @@ export const talkThemes: TalkTheme[] = [
         title: '秋日拾遗',
         author: '风微微',
         role: '我的分享',
-        description: '电子明信片项目、拆字游戏、秋日歌单、文学影像与 AI 写作。',
+        description: '电子明信片项目、秋日歌单、文学影像与 AI 写作。',
         cover: '/talks/autumn-2026/feng/cover.webp',
         file: '/talks/autumn-2026/feng/fengweiwei-autumn.pptx',
         slides: fengSlides,
@@ -54,11 +54,11 @@ export const talkThemes: TalkTheme[] = [
       {
         id: 'xueyaxian-autumn',
         title: '秋日手记',
-        author: '薛雅娴',
+        author: '雷秋岚',
         role: '同期分享',
         description: '拼豆、立秋日记、在湖南、晋祠初秋、桑贝与拆字，共八章秋日笔记。',
         cover: '/talks/autumn-2026/xue/cover.webp',
-        file: '/talks/autumn-2026/xue/xueyaxian-autumn.pptx',
+        file: '/talks/autumn-2026/xue/leiqiulan-autumn.pptx',
         slides: xueSlides,
         color: '#A8C4C1',
       },
