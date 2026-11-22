@@ -10,6 +10,14 @@ export interface Work {
 
 export const works: Work[] = [
   {
+    title: '秋天',
+    description: '秋天主题的 3D 明信片册，收集十九个秋天与十九首诗',
+    href: 'https://supervivian.github.io/AutumnPostCard/',
+    color: '#D4A574',
+    spine: 'AUTUMN',
+    icon: '/assets/icons/autumn.svg',
+  },
+  {
     title: '圣诞夜',
     description: '圣诞夜的互动小屋',
     href: '/works/christmas-night/index.html',
