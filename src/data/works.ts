@@ -18,6 +18,14 @@ export const works: Work[] = [
     icon: '/assets/icons/autumn.svg',
   },
   {
+    title: '主题手记',
+    description: '不同主题的个人 PPT 存档：秋天、年度回顾，以及下一次想认真分享的事',
+    href: '/talks/',
+    color: '#E6C9A8',
+    spine: 'TALKS',
+    icon: '/assets/icons/talks.svg',
+  },
+  {
     title: '圣诞夜',
     description: '圣诞夜的互动小屋',
     href: '/works/christmas-night/index.html',

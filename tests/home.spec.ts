@@ -24,7 +24,7 @@ test.describe('首页 App 交互', () => {
         await newPage.close();
       } else {
         await app.click();
-        await page.waitForURL(href, { timeout: 5000 });
+        await expect(page).toHaveURL(href, { timeout: 5000 });
         await expect(page).toHaveURL(href);
         await page.goto('/');
       }
@@ -51,7 +51,7 @@ test.describe('首页 App 交互', () => {
         await newPage.close();
       } else {
         await item.click();
-        await page.waitForURL(href, { timeout: 5000 });
+        await expect(page).toHaveURL(href, { timeout: 5000 });
         await expect(page).toHaveURL(href);
         await page.goto('/');
       }

@@ -1,0 +1,435 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { talkThemes } from '../data/talks';
+---
+
+<BaseLayout title="主题手记 | supervivian" description="不同主题的个人 PPT 存档与在线预览">
+  <div class="talks-page">
+    <aside class="talks-sidebar" aria-label="主题手记菜单">
+      <a class="talks-back" href="/" aria-label="返回首页">← 首页</a>
+      <div class="sidebar-eyebrow">THEME ARCHIVE</div>
+      <h1 class="sidebar-title">主题手记</h1>
+      <nav class="theme-tabs" aria-label="主题列表">
+        {talkThemes.map((theme, index) => (
+          <button
+            class={`theme-tab ${index === 0 ? 'is-active' : ''} ${theme.status === 'planned' ? 'is-planned' : ''}`}
+            type="button"
+            data-theme={theme.id}
+            aria-label={theme.label}
+          >
+            <span class="theme-tab-dot" style={`background-color: ${theme.status === 'planned' ? '#C8B89A' : '#D4A574'}`}></span>
+            <span class="theme-tab-label">{theme.label}</span>
+            <span class="theme-tab-date">{theme.date}</span>
+          </button>
+        ))}
+      </nav>
+      <p class="sidebar-note">同一个主题，可以有很多份不同的记录。</p>
+    </aside>
+
+    <main class="talks-main">
+      {talkThemes.map((theme, index) => (
+        <section class={`theme-panel ${index === 0 ? 'is-active' : ''}`} data-panel={theme.id}>
+          <header class="theme-header">
+            <div class="theme-eyebrow">{theme.date}</div>
+            <h2>{theme.title}</h2>
+            <p>{theme.description}</p>
+          </header>
+
+          {theme.decks.length > 0 ? (
+            <div class="deck-grid">
+              {theme.decks.map((deck) => (
+                <button
+                  class="deck-card"
+                  type="button"
+                  data-view-deck={deck.id}
+                  aria-label={`预览 ${deck.title}`}
+                >
+                  <span class="deck-cover" style={`border-color: ${deck.color}`}>
+                    <img src={deck.cover} alt={`${deck.title} 封面`} loading="lazy" />
+                    <span class="deck-slide-count">{deck.slides.length} 页</span>
+                  </span>
+                  <span class="deck-body">
+                    <span class="deck-role">{deck.role}</span>
+                    <span class="deck-title">{deck.title}</span>
+                    <span class="deck-author">{deck.author}</span>
+                    <span class="deck-desc">{deck.description}</span>
+                    <span class="deck-action">在线预览 →</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div class="coming-soon">
+              <div class="coming-soon-icon">✦</div>
+              <h3>这一页还空着</h3>
+              <p>{theme.description}</p>
+            </div>
+          )}
+        </section>
+      ))}
+    </main>
+  </div>
+
+  <div class="viewer" id="viewer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="PPT 在线预览">
+    <div class="viewer-backdrop" data-close-viewer></div>
+    <div class="viewer-panel">
+      <div class="viewer-topbar">
+        <div class="viewer-heading">
+          <strong id="viewerTitle"></strong>
+          <span id="viewerAuthor"></span>
+        </div>
+        <button class="viewer-close" type="button" data-close-viewer aria-label="关闭预览">×</button>
+      </div>
+      <div class="viewer-stage">
+        <img id="viewerImage" src="" alt="PPT 当前页" />
+      </div>
+      <div class="viewer-controls">
+        <button class="viewer-nav" type="button" id="viewerPrev" aria-label="上一页">← 上一页</button>
+        <span class="viewer-counter" id="viewerCounter"></span>
+        <button class="viewer-nav" type="button" id="viewerNext" aria-label="下一页">下一页 →</button>
+        <a class="viewer-download" id="viewerDownload" href="#" download>下载 PPTX</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" id="talks-data" set:html={JSON.stringify(talkThemes)}></script>
+
+  <script>
+    (function () {
+      const dataEl = document.getElementById('talks-data');
+      const themes = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
+      const tabs = document.querySelectorAll<HTMLElement>('.theme-tab');
+      const panels = document.querySelectorAll<HTMLElement>('.theme-panel');
+      const viewer = document.getElementById('viewer');
+      const viewerImage = document.getElementById('viewerImage') as HTMLImageElement | null;
+      const viewerTitle = document.getElementById('viewerTitle');
+      const viewerAuthor = document.getElementById('viewerAuthor');
+      const viewerCounter = document.getElementById('viewerCounter');
+      const viewerDownload = document.getElementById('viewerDownload') as HTMLAnchorElement | null;
+      const prev = document.getElementById('viewerPrev') as HTMLButtonElement | null;
+      const next = document.getElementById('viewerNext') as HTMLButtonElement | null;
+
+      let currentSlides: string[] = [];
+      let currentIndex = 0;
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const id = tab.dataset.theme;
+          if (!id) return;
+          tabs.forEach((t) => t.classList.toggle('is-active', t === tab));
+          panels.forEach((p) => p.classList.toggle('is-active', p.dataset.panel === id));
+        });
+      });
+
+      function render() {
+        if (!viewerImage || !viewerCounter) return;
+        viewerImage.src = currentSlides[currentIndex] || '';
+        viewerCounter.textContent = `${currentIndex + 1} / ${currentSlides.length}`;
+        if (prev) prev.disabled = currentIndex === 0;
+        if (next) next.disabled = currentIndex === currentSlides.length - 1;
+      }
+
+      function openDeck(deckId: string) {
+        const deck = themes.flatMap((t: any) => t.decks || []).find((d: any) => d.id === deckId);
+        if (!deck || !viewer) return;
+        currentSlides = deck.slides || [];
+        currentIndex = 0;
+        if (viewerTitle) viewerTitle.textContent = deck.title;
+        if (viewerAuthor) viewerAuthor.textContent = deck.author;
+        if (viewerDownload) viewerDownload.href = deck.file;
+        render();
+        viewer.classList.add('is-open');
+        viewer.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeViewer() {
+        if (!viewer) return;
+        viewer.classList.remove('is-open');
+        viewer.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll<HTMLElement>('[data-view-deck]').forEach((card) => {
+        card.addEventListener('click', () => {
+          if (card.dataset.viewDeck) openDeck(card.dataset.viewDeck);
+        });
+      });
+
+      document.querySelectorAll<HTMLElement>('[data-close-viewer]').forEach((el) => {
+        el.addEventListener('click', closeViewer);
+      });
+
+      prev?.addEventListener('click', () => {
+        if (currentIndex > 0) { currentIndex -= 1; render(); }
+      });
+      next?.addEventListener('click', () => {
+        if (currentIndex < currentSlides.length - 1) { currentIndex += 1; render(); }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (!viewer?.classList.contains('is-open')) return;
+        if (e.key === 'Escape') closeViewer();
+        if (e.key === 'ArrowLeft' && currentIndex > 0) { currentIndex -= 1; render(); }
+        if (e.key === 'ArrowRight' && currentIndex < currentSlides.length - 1) { currentIndex += 1; render(); }
+      });
+    })();
+  </script>
+
+  <style>
+    .talks-page {
+      min-height: 100vh;
+      display: flex;
+      background:
+        radial-gradient(ellipse 70% 60% at 12% 18%, rgba(212, 165, 116, 0.28) 0%, transparent 55%),
+        radial-gradient(ellipse 65% 55% at 88% 82%, rgba(168, 196, 193, 0.3) 0%, transparent 50%),
+        linear-gradient(180deg, #FFF9F0 0%, #FDF3E6 100%);
+      color: #4A382E;
+    }
+
+    .talks-sidebar {
+      width: 268px;
+      flex-shrink: 0;
+      padding: 28px 20px;
+      background: rgba(255, 255, 255, 0.72);
+      border-right: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    @supports (backdrop-filter: blur(8px)) and (not (hover: none)) {
+      .talks-sidebar { background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(8px); }
+    }
+
+    .talks-back {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 18px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #6B4423;
+      font-family: var(--font-pixel);
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .sidebar-eyebrow {
+      margin-top: 34px;
+      font-family: var(--font-pixel);
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: #A98A6A;
+    }
+
+    .sidebar-title {
+      margin: 12px 0 24px;
+      font-family: var(--font-pixel);
+      font-size: 20px;
+      line-height: 1.5;
+      color: #4A382E;
+    }
+
+    .theme-tabs { display: flex; flex-direction: column; gap: 10px; }
+
+    .theme-tab {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.5);
+      color: #4A382E;
+      text-align: left;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    .theme-tab:hover { background: rgba(255, 255, 255, 0.78); transform: translateX(3px); }
+    .theme-tab.is-active { background: rgba(255, 255, 255, 0.94); box-shadow: 0 4px 14px rgba(107, 68, 35, 0.12); }
+    .theme-tab.is-planned { opacity: 0.72; }
+
+    .theme-tab-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .theme-tab-label { flex: 1; font-size: 14px; font-weight: 700; }
+    .theme-tab-date { font-size: 11px; color: #8A7060; }
+
+    .sidebar-note {
+      margin-top: 28px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #8A7060;
+    }
+
+    .talks-main { flex: 1; min-width: 0; padding: 36px 40px 56px; }
+    .theme-panel { display: none; }
+    .theme-panel.is-active { display: block; }
+
+    .theme-header { max-width: 820px; margin-bottom: 30px; }
+    .theme-eyebrow {
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #A98A6A;
+    }
+    .theme-header h2 {
+      margin: 14px 0 12px;
+      font-family: var(--font-pixel);
+      font-size: 22px;
+      line-height: 1.6;
+      color: #4A382E;
+    }
+    .theme-header p { font-size: 15px; line-height: 1.9; color: #6B5547; }
+
+    .deck-grid { display: flex; flex-wrap: wrap; gap: 24px; }
+
+    .deck-card {
+      width: 380px;
+      max-width: 100%;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 30px rgba(107, 68, 35, 0.1);
+      text-align: left;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .deck-card:hover { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(107, 68, 35, 0.16); }
+
+    .deck-cover {
+      display: block;
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-bottom: 3px solid;
+      background: #F4E8D8;
+    }
+    .deck-cover img { width: 100%; height: 100%; object-fit: cover; image-rendering: auto; }
+    .deck-slide-count {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(74, 56, 46, 0.78);
+      color: #FFF9F0;
+      font-size: 11px;
+    }
+
+    .deck-body { display: block; padding: 22px 24px 24px; }
+    .deck-role { display: block; font-size: 11px; letter-spacing: 2px; color: #A98A6A; }
+    .deck-title {
+      display: block;
+      margin-top: 8px;
+      font-family: var(--font-pixel);
+      font-size: 17px;
+      line-height: 1.6;
+      color: #4A382E;
+    }
+    .deck-author { display: block; margin-top: 4px; font-size: 13px; color: #8A7060; }
+    .deck-desc { display: block; margin-top: 14px; font-size: 14px; line-height: 1.8; color: #6B5547; }
+    .deck-action { display: block; margin-top: 18px; font-size: 13px; font-weight: 700; color: #6B4423; }
+
+    .coming-soon {
+      max-width: 520px;
+      padding: 48px;
+      border: 2px dashed rgba(169, 138, 106, 0.45);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.5);
+      text-align: center;
+    }
+    .coming-soon-icon { font-size: 30px; color: #D4A574; }
+    .coming-soon h3 { margin: 14px 0 10px; font-family: var(--font-pixel); font-size: 16px; }
+    .coming-soon p { font-size: 14px; line-height: 1.8; color: #6B5547; }
+
+    .viewer {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .viewer.is-open { display: flex; }
+    .viewer-backdrop { position: absolute; inset: 0; background: rgba(28, 20, 17, 0.82); }
+    .viewer-panel {
+      position: relative;
+      width: min(1120px, 96vw);
+      max-height: 94vh;
+      display: flex;
+      flex-direction: column;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #FFF9F0;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+    }
+    .viewer-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px;
+      border-bottom: 1px solid #E2DEDA;
+    }
+    .viewer-heading strong { display: block; font-size: 16px; color: #4A382E; }
+    .viewer-heading span { display: block; margin-top: 2px; font-size: 12px; color: #8A7060; }
+    .viewer-close {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: #F4E8D8;
+      color: #4A382E;
+      font-size: 22px;
+      line-height: 1;
+    }
+    .viewer-stage {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #EDE4D6;
+      padding: 18px;
+    }
+    .viewer-stage img {
+      max-width: 100%;
+      max-height: calc(94vh - 160px);
+      object-fit: contain;
+      image-rendering: auto;
+      box-shadow: 0 8px 30px rgba(74, 56, 46, 0.18);
+    }
+    .viewer-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 14px 20px;
+      border-top: 1px solid #E2DEDA;
+      background: #FFF9F0;
+    }
+    .viewer-nav, .viewer-download {
+      padding: 9px 16px;
+      border-radius: 999px;
+      background: #F4E8D8;
+      color: #4A382E;
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .viewer-nav:disabled { opacity: 0.4; cursor: default; }
+    .viewer-download { background: #684F48; color: #FFF9F0; }
+    .viewer-counter { min-width: 64px; text-align: center; font-size: 13px; color: #8A7060; }
+
+    @media (max-width: 760px) {
+      .talks-page { flex-direction: column; }
+      .talks-sidebar {
+        width: 100%;
+        padding: 16px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+      }
+      .sidebar-title { margin-bottom: 16px; }
+      .theme-tabs { flex-direction: row; overflow-x: auto; }
+      .theme-tab { width: auto; white-space: nowrap; }
+      .theme-tab-date, .sidebar-note { display: none; }
+      .talks-main { padding: 24px 16px 40px; }
+      .deck-card { width: 100%; }
+      .viewer { padding: 8px; }
+      .viewer-controls { flex-wrap: wrap; gap: 8px; }
+    }
+  </style>
+</BaseLayout>
